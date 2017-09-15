@@ -16,7 +16,7 @@ type Fields struct {
 }
 
 func (f *Fields) renderPlainText() string {
-	if f.contents == nil || len(f.contents) == 0 {
+	if len(f.contents) == 0 {
 		return ""
 	}
 	out := ""
@@ -44,8 +44,9 @@ func (f *Fields) set(fld F) {
 	f.contents = append(f.contents, fld)
 }
 
+// MarshalJSON allows Fields to satisfy json.Marshalable
 func (f *Fields) MarshalJSON() ([]byte, error) {
-	if f.contents == nil || len(f.contents) == 0 {
+	if len(f.contents) == 0 {
 		return []byte("{}"), nil
 	}
 
@@ -54,15 +55,15 @@ func (f *Fields) MarshalJSON() ([]byte, error) {
 		if out != "" {
 			out += ","
 		}
-		keyJson, err := json.Marshal(fld.Key)
+		keyJSON, err := json.Marshal(fld.Key)
 		if err != nil {
 			return []byte(nil), err
 		}
-		valueJson, err := json.Marshal(fld.Val)
+		valueJSON, err := json.Marshal(fld.Val)
 		if err != nil {
 			return []byte(nil), err
 		}
-		out += string(keyJson) + ":" + string(valueJson)
+		out += string(keyJSON) + ":" + string(valueJSON)
 	}
 	return []byte("{" + out + "}"), nil
 }
