@@ -183,3 +183,18 @@ Describe("ChurnSomeNumbers()", func() {
 
 If the test passes, it will produce no extra output, but if it fails, the log will be included in the expectation failure message.
 
+
+
+### Running tests
+
+To run tests, you'll need ginkgo and gomega:
+
+```
+$ go get github.com/onsi/ginkgo github.com/onsi/gomega
+```
+
+Then run the tests with ginkgo:
+
+```
+$ ginkgo
+```
