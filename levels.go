@@ -2,6 +2,8 @@ package lg
 
 import (
 	"encoding/json"
+	"fmt"
+	"strings"
 )
 
 // Level is a log level enumerable
@@ -38,4 +40,25 @@ func (l Level) String() string {
 
 func (l Level) MarshalJSON() ([]byte, error) {
 	return json.Marshal(l.String())
+}
+
+// ParseLevel transforms a string log level into a Level type. Returns an error
+// if the given level is invalid.
+func ParseLevel(level string) (Level, error) {
+	switch strings.ToLower(level) {
+	case "trace":
+		return LevelTrace, nil
+	case "debug":
+		return LevelDebug, nil
+	case "info":
+		return LevelInfo, nil
+	case "warn":
+		return LevelWarn, nil
+	case "error":
+		return LevelError, nil
+	case "fatal":
+		return LevelFatal, nil
+	default:
+		return Level(0), fmt.Errorf("Invalid log level '%s'", level)
+	}
 }
