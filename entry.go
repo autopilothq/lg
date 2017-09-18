@@ -1,6 +1,7 @@
 package lg
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"time"
@@ -33,11 +34,14 @@ func (e *Entry) toPlainTextWithoutTime() []byte {
 }
 
 func (e *Entry) toJSON() []byte {
-	bytes, err := json.Marshal(e)
+	buf := new(bytes.Buffer)
+	enc := json.NewEncoder(buf)
+	enc.SetEscapeHTML(false)
+	err := enc.Encode(e)
 	if err != nil {
 		return []byte("{\"error\":\"encoding error\"}\n")
 	}
-	return append(bytes, '\n')
+	return buf.Bytes()
 }
 
 func makeEntry(level Level, args []interface{}) *Entry {
