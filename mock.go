@@ -1,7 +1,12 @@
 package lg
 
+import (
+	"sync"
+)
+
 type MockLog struct {
 	entries []*Entry
+	mutex   sync.RWMutex
 }
 
 type filter interface {
@@ -13,6 +18,9 @@ func Mock() *MockLog {
 }
 
 func (m *MockLog) Count(filters ...filter) (count int) {
+	m.mutex.RLock()
+	defer m.mutex.RUnlock()
+
 	for _, e := range m.entries {
 		allOk := true
 		for _, f := range filters {
@@ -32,6 +40,9 @@ func (m *MockLog) Count(filters ...filter) (count int) {
 func (m *MockLog) Messages(filters ...filter) []string {
 	messages := make([]string, 0)
 
+	m.mutex.RLock()
+	defer m.mutex.RUnlock()
+
 	for _, e := range m.entries {
 		allOk := true
 		for _, f := range filters {
@@ -49,6 +60,9 @@ func (m *MockLog) Messages(filters ...filter) []string {
 }
 
 func (m *MockLog) Message(filters ...filter) (string, bool) {
+	m.mutex.RLock()
+	defer m.mutex.RUnlock()
+
 	for _, e := range m.entries {
 		allOk := true
 		for _, f := range filters {
@@ -69,6 +83,10 @@ func (m *MockLog) Message(filters ...filter) (string, bool) {
 // in assertion/expectation failure messages
 func (m *MockLog) Dump() string {
 	contents := ""
+
+	m.mutex.RLock()
+	defer m.mutex.RUnlock()
+
 	for _, e := range m.entries {
 		contents = contents + string(e.toPlainText())
 	}
@@ -77,6 +95,10 @@ func (m *MockLog) Dump() string {
 
 func (m *MockLog) addEntry(level Level, args []interface{}) *Entry {
 	entry := makeEntry(level, args)
+
+	m.mutex.Lock()
+	defer m.mutex.Unlock()
+
 	m.entries = append(m.entries, entry)
 	return entry
 }
@@ -85,6 +107,10 @@ func (m *MockLog) addFormattedEntry(
 	level Level, pattern string, args []interface{},
 ) *Entry {
 	entry := makeFormattedEntry(level, pattern, args)
+
+	m.mutex.Lock()
+	defer m.mutex.Unlock()
+
 	m.entries = append(m.entries, entry)
 	return entry
 }
