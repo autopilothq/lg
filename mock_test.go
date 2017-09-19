@@ -56,14 +56,14 @@ var _ = Describe("log mocking", func() {
 		It("counts log messages, filtered by contents", func() {
 			log.Trace("foobar")
 			log.Error("barbaz")
-			log.Fatal("foobaz")
+			log.Info("foobaz")
 			Expect(mockLog.Count(lg.Contains("bar"))).To(Equal(2))
 		})
 
 		It("counts log messages, with multiple filters", func() {
 			log.Trace("foobar")
 			log.Error("barbaz")
-			log.Fatal("foobaz")
+			log.Warning("foobaz")
 			Expect(
 				mockLog.Count(lg.AtLevel(lg.LevelTrace), lg.Contains("bar")),
 			).To(Equal(1))

@@ -22,6 +22,10 @@ type Log interface {
 	Warnln(args ...interface{})
 	Warnf(pattern string, args ...interface{})
 
+	Warning(args ...interface{})
+	Warningln(args ...interface{})
+	Warningf(pattern string, args ...interface{})
+
 	Error(args ...interface{})
 	Errorln(args ...interface{})
 	Errorf(pattern string, args ...interface{})

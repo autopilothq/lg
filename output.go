@@ -121,12 +121,16 @@ func callHooks(entry *Entry) {
 	}
 }
 
-func addEntry(level Level, args []interface{}) {
-	callHooks(makeEntry(level, args))
+func addEntry(level Level, args []interface{}) *Entry {
+	entry := makeEntry(level, args)
+	callHooks(entry)
+	return entry
 }
 
-func addFormattedEntry(level Level, pattern string, args []interface{}) {
-	callHooks(makeFormattedEntry(level, pattern, args))
+func addFormattedEntry(level Level, pattern string, args []interface{}) *Entry {
+	entry := makeFormattedEntry(level, pattern, args)
+	callHooks(entry)
+	return entry
 }
 
 func init() {

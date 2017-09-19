@@ -1,5 +1,9 @@
 package lg
 
+import (
+	"os"
+)
+
 func (e *ExtendedLog) Extend(f ...F) Log {
 	newFields := &Fields{}
 
@@ -25,7 +29,7 @@ type ExtendedLog struct {
 	fields *Fields
 }
 
-func (e *ExtendedLog) addEntry(level Level, args []interface{}) {
+func (e *ExtendedLog) addEntry(level Level, args []interface{}) *Entry {
 	if e.fields != nil && e.fields.contents != nil {
 		i := 0
 		newArgs := make([]interface{}, len(args)+len(e.fields.contents))
@@ -35,15 +39,14 @@ func (e *ExtendedLog) addEntry(level Level, args []interface{}) {
 		for j := 0; j < len(args); i, j = i+1, j+1 {
 			newArgs[i] = args[j]
 		}
-		addEntry(level, newArgs)
-	} else {
-		addEntry(level, args)
+		return addEntry(level, newArgs)
 	}
+	return addEntry(level, args)
 }
 
 func (e *ExtendedLog) addFormattedEntry(
 	level Level, pattern string, args []interface{},
-) {
+) *Entry {
 	fields, remaining := extractTrailingFields(args)
 
 	if e.fields != nil && e.fields.contents != nil {
@@ -59,10 +62,9 @@ func (e *ExtendedLog) addFormattedEntry(
 		for k := 0; k < len(fields.contents); i, k = i+1, k+1 {
 			newArgs[i] = fields.contents[k]
 		}
-		addFormattedEntry(level, pattern, newArgs)
-	} else {
-		addFormattedEntry(level, pattern, args)
+		return addFormattedEntry(level, pattern, newArgs)
 	}
+	return addFormattedEntry(level, pattern, args)
 }
 
 // Trace logs a message at trace level
@@ -140,6 +142,21 @@ func (e *ExtendedLog) Warnf(pattern string, args ...interface{}) {
 	e.addFormattedEntry(LevelWarn, pattern, args)
 }
 
+// Warning logs a message at warn level
+func (e *ExtendedLog) Warning(args ...interface{}) {
+	e.addEntry(LevelWarn, args)
+}
+
+// Warningln logs a message at warn level
+func (e *ExtendedLog) Warningln(args ...interface{}) {
+	e.addEntry(LevelWarn, args)
+}
+
+// Warningf logs a formatted message at warn level
+func (e *ExtendedLog) Warningf(pattern string, args ...interface{}) {
+	e.addFormattedEntry(LevelWarn, pattern, args)
+}
+
 // Error logs a message at error level
 func (e *ExtendedLog) Error(args ...interface{}) {
 	e.addEntry(LevelError, args)
@@ -158,29 +175,32 @@ func (e *ExtendedLog) Errorf(pattern string, args ...interface{}) {
 // Fatal logs a message at fatal level
 func (e *ExtendedLog) Fatal(args ...interface{}) {
 	e.addEntry(LevelFatal, args)
+	os.Exit(1)
 }
 
 // Fatalln logs a message at fatal level
 func (e *ExtendedLog) Fatalln(args ...interface{}) {
 	e.addEntry(LevelFatal, args)
+	os.Exit(1)
 }
 
 // Fatalf logs a formatted message at fatal level
 func (e *ExtendedLog) Fatalf(pattern string, args ...interface{}) {
 	e.addFormattedEntry(LevelFatal, pattern, args)
+	os.Exit(1)
 }
 
 // Panic logs a message at fatal level and panics
 func (e *ExtendedLog) Panic(args ...interface{}) {
-	e.addEntry(LevelFatal, args)
+	panic(e.addEntry(LevelFatal, args).Message)
 }
 
 // Panicln logs a message at fatal level and panics
 func (e *ExtendedLog) Panicln(args ...interface{}) {
-	e.addEntry(LevelFatal, args)
+	panic(e.addEntry(LevelFatal, args).Message)
 }
 
 // Panicf logs a formatted message at fatal level and panics
 func (e *ExtendedLog) Panicf(pattern string, args ...interface{}) {
-	e.addFormattedEntry(LevelFatal, pattern, args)
+	panic(e.addFormattedEntry(LevelFatal, pattern, args).Message)
 }

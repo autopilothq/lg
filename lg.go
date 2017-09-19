@@ -1,5 +1,9 @@
 package lg
 
+import (
+	"os"
+)
+
 func Extend(f ...F) Log {
 	fields := &Fields{}
 	ext := &ExtendedLog{fields: fields}
@@ -84,6 +88,21 @@ func Warnf(pattern string, args ...interface{}) {
 	addFormattedEntry(LevelWarn, pattern, args)
 }
 
+// Warning logs a message at warn level
+func Warning(args ...interface{}) {
+	addEntry(LevelWarn, args)
+}
+
+// Warningln logs a message at warn level
+func Warningln(args ...interface{}) {
+	addEntry(LevelWarn, args)
+}
+
+// Warningf logs a formatted message at warn level
+func Warningf(pattern string, args ...interface{}) {
+	addFormattedEntry(LevelWarn, pattern, args)
+}
+
 // Error logs a message at error level
 func Error(args ...interface{}) {
 	addEntry(LevelError, args)
@@ -102,29 +121,32 @@ func Errorf(pattern string, args ...interface{}) {
 // Fatal logs a message at fatal level
 func Fatal(args ...interface{}) {
 	addEntry(LevelFatal, args)
+	os.Exit(1)
 }
 
 // Fatalln logs a message at fatal level
 func Fatalln(args ...interface{}) {
 	addEntry(LevelFatal, args)
+	os.Exit(1)
 }
 
 // Fatalf logs a formatted message at fatal level
 func Fatalf(pattern string, args ...interface{}) {
 	addFormattedEntry(LevelFatal, pattern, args)
+	os.Exit(1)
 }
 
 // Panic logs a message at fatal level and panics
 func Panic(args ...interface{}) {
-	addEntry(LevelFatal, args)
+	panic(addEntry(LevelFatal, args).Message)
 }
 
 // Panicln logs a message at fatal level and panics
 func Panicln(args ...interface{}) {
-	addEntry(LevelFatal, args)
+	panic(addEntry(LevelFatal, args).Message)
 }
 
 // Panicf logs a formatted message at fatal level and panics
 func Panicf(pattern string, args ...interface{}) {
-	addFormattedEntry(LevelFatal, pattern, args)
+	panic(addFormattedEntry(LevelFatal, pattern, args).Message)
 }

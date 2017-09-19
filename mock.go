@@ -75,15 +75,18 @@ func (m *MockLog) Dump() string {
 	return contents
 }
 
-func (m *MockLog) addEntry(level Level, args []interface{}) {
+func (m *MockLog) addEntry(level Level, args []interface{}) *Entry {
 	entry := makeEntry(level, args)
 	m.entries = append(m.entries, entry)
+	return entry
 }
 
 func (m *MockLog) addFormattedEntry(
 	level Level, pattern string, args []interface{},
-) {
-	m.entries = append(m.entries, makeFormattedEntry(level, pattern, args))
+) *Entry {
+	entry := makeFormattedEntry(level, pattern, args)
+	m.entries = append(m.entries, entry)
+	return entry
 }
 
 func (m *MockLog) Extend(f ...F) Log {
@@ -166,6 +169,21 @@ func (m *MockLog) Warnf(pattern string, args ...interface{}) {
 	m.addFormattedEntry(LevelWarn, pattern, args)
 }
 
+// Warning logs a message at warn level
+func (m *MockLog) Warning(args ...interface{}) {
+	m.addEntry(LevelWarn, args)
+}
+
+// Warningln logs a message at warn level
+func (m *MockLog) Warningln(args ...interface{}) {
+	m.addEntry(LevelWarn, args)
+}
+
+// Warningf logs a formatted message at warn level
+func (m *MockLog) Warningf(pattern string, args ...interface{}) {
+	m.addFormattedEntry(LevelWarn, pattern, args)
+}
+
 // Error logs a message at error level
 func (m *MockLog) Error(args ...interface{}) {
 	m.addEntry(LevelError, args)
@@ -183,30 +201,30 @@ func (m *MockLog) Errorf(pattern string, args ...interface{}) {
 
 // Fatal logs a message at fatal level
 func (m *MockLog) Fatal(args ...interface{}) {
-	m.addEntry(LevelFatal, args)
+	panic(m.addEntry(LevelFatal, args).Message)
 }
 
 // Fatalln logs a message at fatal level
 func (m *MockLog) Fatalln(args ...interface{}) {
-	m.addEntry(LevelFatal, args)
+	panic(m.addEntry(LevelFatal, args).Message)
 }
 
 // Fatalf logs a formatted message at fatal level
 func (m *MockLog) Fatalf(pattern string, args ...interface{}) {
-	m.addFormattedEntry(LevelError, pattern, args)
+	panic(m.addFormattedEntry(LevelError, pattern, args).Message)
 }
 
 // Panic logs a message at fatal level and panics
 func (m *MockLog) Panic(args ...interface{}) {
-	m.addEntry(LevelFatal, args)
+	panic(m.addEntry(LevelFatal, args).Message)
 }
 
 // Panicln logs a message at fatal level and panics
 func (m *MockLog) Panicln(args ...interface{}) {
-	m.addEntry(LevelFatal, args)
+	panic(m.addEntry(LevelFatal, args).Message)
 }
 
 // Panicf logs a formatted message at fatal level and panics
 func (m *MockLog) Panicf(pattern string, args ...interface{}) {
-	m.addFormattedEntry(LevelFatal, pattern, args)
+	panic(m.addFormattedEntry(LevelFatal, pattern, args).Message)
 }
