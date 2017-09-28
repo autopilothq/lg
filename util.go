@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-func extractAllFields(
+func ExtractAllFields(
 	args []interface{},
 ) (fields *Fields, remaining []interface{}) {
 	fields = &Fields{}
@@ -23,7 +23,7 @@ func extractAllFields(
 	return fields, remaining
 }
 
-func extractTrailingFields(
+func ExtractTrailingFields(
 	args []interface{},
 ) (fields *Fields, remaining []interface{}) {
 
@@ -38,7 +38,7 @@ func extractTrailingFields(
 			extractedFs = append([]F{v}, extractedFs...)
 
 		default:
-			remaining = append(remaining, a)
+			remaining = append([]interface{}{a}, remaining...)
 		}
 	}
 
@@ -49,7 +49,7 @@ func extractTrailingFields(
 	return fields, remaining
 }
 
-func renderMessage(args ...interface{}) string {
+func RenderMessage(args ...interface{}) string {
 	message := ""
 	for _, a := range args {
 		if message != "" {

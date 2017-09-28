@@ -24,7 +24,7 @@ func (f *Fields) renderPlainText() string {
 		if out != "" {
 			out += " "
 		}
-		out += fld.Key + ":" + renderMessage(fld.Val)
+		out += fld.Key + ":" + RenderMessage(fld.Val)
 	}
 	return "[" + out + "] "
 }

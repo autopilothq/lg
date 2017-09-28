@@ -47,7 +47,7 @@ func (e *ExtendedLog) addEntry(level Level, args []interface{}) *Entry {
 func (e *ExtendedLog) addFormattedEntry(
 	level Level, pattern string, args []interface{},
 ) *Entry {
-	fields, remaining := extractTrailingFields(args)
+	fields, remaining := ExtractTrailingFields(args)
 
 	if e.fields != nil && e.fields.contents != nil {
 		i := 0
