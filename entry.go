@@ -45,9 +45,9 @@ func (e *Entry) toJSON() []byte {
 }
 
 func makeEntry(level Level, args []interface{}) *Entry {
-	fields, remaining := extractAllFields(args)
+	fields, remaining := ExtractAllFields(args)
 
-	message := renderMessage(remaining...)
+	message := RenderMessage(remaining...)
 
 	return &Entry{
 		time.Now().UTC(),
@@ -60,7 +60,7 @@ func makeEntry(level Level, args []interface{}) *Entry {
 func makeFormattedEntry(
 	level Level, pattern string, args []interface{},
 ) *Entry {
-	fields, remaining := extractTrailingFields(args)
+	fields, remaining := ExtractTrailingFields(args)
 
 	message := fmt.Sprintf(pattern, remaining...)
 
