@@ -2,6 +2,8 @@
 
 A simple, structured logger for Go.
 
+[![GoDoc](https://godoc.org/github.com/autopilothq/lg?status.svg)](https://godoc.org/github.com/autopilothq/lg)
+[![Go Report Card](https://goreportcard.com/badge/github.com/autopilothq/lg)](https://goreportcard.com/report/github.com/autopilothq/lg)
 
 
 ### Basic Usage
