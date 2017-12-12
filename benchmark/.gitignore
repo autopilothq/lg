@@ -1,5 +1,5 @@
 bench.svg
-cprof
-mem.out
-fancyBench.txt
+bench.out
+cpuprof.out
+memprof.out
 benchmark.test

@@ -1,20 +1,47 @@
+GOPATH=$(shell go env GOPATH)
+BENCHCMP=${GOPATH}/src/golang.org/x/tools/cmd/benchcmp
+BENCHVIS=${GOPATH}/src/github.com/ajstarks/svgo/benchviz
 
-bench:
-	go test -run=none -bench=. -benchmem
+compare: bench.out
+	benchcmp reflectionBench.out bench.out
 
-benchOut:
-	go test -run=none -bench=. -benchmem > fancyBench.txt
+compareviz: bench.svg
 
-prof:
-	go test -run=none -bench=BenchmarkFancy -cpuprofile=cprof -memprofile=mem.out -benchmem
-	go tool pprof --text benchmark.test cprof
+bench.svg: bench.out
+	benchcmp reflectionBench.out bench.out | benchviz > bench.svg
 
-compare: benchOut
-	benchcmp reflectionBench.txt fancyBench.txt
+bench: installTools
+	go test -run=NONE -bench=. -benchmem
 
-compareViz: benchOut
-	benchcmp reflectionBench.txt fancyBench.txt | benchviz > bench.svg
+bench.out: installTools
+	go test -run=NONE -bench=. -benchmem > bench.out
 
-installTools:
-	go get -u github.com/ajstarks/svgo/benchviz \
-				golang.org/x/tools/cmd/benchcmp
+prof: installTools
+	go test -run=NONE -bench=. -cpuprofile=cpuprof.out -memprofile=memprof.out -benchmem
+
+cpuprof.out: prof
+	go tool pprof --text benchmark.test cpuprof.out
+
+cpuprof: cpuprof.out
+
+memprof.out: prof
+	go tool pprof --text benchmark.test memprof.out
+
+memprof: memprof.out
+
+installTools: ${BENCHCMP}/.sentinel ${BENCHVIS}/.sentinel
+
+.PRECIOUS: ${BENCHCMP}/.sentinel # otherwise make (annoyingly) deletes it
+${BENCHCMP}/.sentinel:
+		 go get -u golang.org/x/tools/cmd/benchcmp
+		 touch $@
+
+.PRECIOUS: ${BENCHVIS}/.sentinel # otherwise make (annoyingly) deletes it
+${BENCHVIS}/.sentinel:
+		go get -u github.com/ajstarks/svgo/benchviz
+		touch $@
+
+clean:
+	rm -f bench.out bench.svg cpuprof.out memprof.out ${BENCHCMP}/.sentinel ${BENCHVIS}/.sentinel
+
+.PHONY: clean compare compareviz bench prof cpuprof memprof
