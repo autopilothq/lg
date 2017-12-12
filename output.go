@@ -21,23 +21,26 @@ var (
 )
 
 func makeOutputHookFn(output io.Writer, options *Options) func(*Entry) {
-	return func(e *Entry) {
-		if options.minLevel > e.Level {
-			return
-		}
-
-		switch options.format {
-
-		case FormatPlainText:
+	switch options.format {
+	case FormatPlainText:
+		return func(e *Entry) {
+			if options.minLevel > e.Level {
+				return
+			}
 			output.Write(e.toPlainText())
-
-		case FormatJSON:
-			output.Write(e.toJSON())
-
-		default:
-			panic(fmt.Errorf("Invalid log output format %#v", options.format))
 		}
 
+	case FormatJSON:
+		return func(e *Entry) {
+			if options.minLevel > e.Level {
+				return
+			}
+
+			output.Write(e.toJSON())
+		}
+
+	default:
+		panic(fmt.Errorf("Invalid log output format %#v", options.format))
 	}
 }
 
