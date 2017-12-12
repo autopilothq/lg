@@ -3,12 +3,12 @@ BENCHCMP=${GOPATH}/src/golang.org/x/tools/cmd/benchcmp
 BENCHVIS=${GOPATH}/src/github.com/ajstarks/svgo/benchviz
 
 compare: bench.out
-	benchcmp reflectionBench.out bench.out
+	benchcmp oldBench.out bench.out
 
 compareviz: bench.svg
 
 bench.svg: bench.out
-	benchcmp reflectionBench.out bench.out | benchviz > bench.svg
+	benchcmp oldBench.out bench.out | benchviz > bench.svg
 
 bench: installTools
 	go test -run=NONE -bench=. -benchmem
