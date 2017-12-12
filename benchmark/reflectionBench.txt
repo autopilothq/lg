@@ -1,0 +1,7 @@
+goos: linux
+goarch: amd64
+pkg: github.com/autopilothq/lg/benchmark
+BenchmarkFieldLogging/Marshalling_JSON-8         	   50000	     22661 ns/op	   17764 B/op	     135 allocs/op
+BenchmarkFieldLogging/Marshalling_JSON_parallel-8         	  200000	      6976 ns/op	   32918 B/op	     135 allocs/op
+PASS
+ok  	github.com/autopilothq/lg/benchmark	2.960s

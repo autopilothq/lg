@@ -1,7 +1,7 @@
 package lg
 
 import (
-	"encoding/json"
+	fancy "github.com/autopilothq/lg/encoding/json"
 )
 
 // F represents a single pair of log 'fields'
@@ -44,26 +44,18 @@ func (f *Fields) set(fld F) {
 	f.contents = append(f.contents, fld)
 }
 
-// MarshalJSON allows Fields to satisfy json.Marshalable
-func (f *Fields) MarshalJSON() ([]byte, error) {
+// MarshalJSONEncoder allows Fields to be marshaled to JSON via the encoder
+func (f *Fields) MarshalJSONEncoder(encoder *fancy.Encoder) error {
 	if len(f.contents) == 0 {
-		return []byte("{}"), nil
+		return encoder.AddByteString("{}")
 	}
 
-	out := ""
 	for _, fld := range f.contents {
-		if out != "" {
-			out += ","
-		}
-		keyJSON, err := json.Marshal(fld.Key)
+		err := fancy.EncodeKeyValue(encoder, fld.Key, fld.Val)
 		if err != nil {
-			return []byte(nil), err
+			return err
 		}
-		valueJSON, err := json.Marshal(fld.Val)
-		if err != nil {
-			return []byte(nil), err
-		}
-		out += string(keyJSON) + ":" + string(valueJSON)
 	}
-	return []byte("{" + out + "}"), nil
+
+	return nil
 }

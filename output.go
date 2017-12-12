@@ -86,6 +86,18 @@ func RemoveOutput(output io.Writer) {
 	}
 }
 
+// RemoveAllOutputs removes all previously added outputs
+func RemoveAllOutputs() {
+	mutex.Lock()
+	defer mutex.Unlock()
+
+	for _, p := range outputs {
+		delete(hookFnPointers, p)
+	}
+
+	outputs = make(map[io.Writer]uintptr)
+}
+
 // AddHook causes logging activity to invoke the given hook function
 func AddHook(fn func(*Entry), opts ...func(*Options)) {
 	options := makeOptions(opts...)
