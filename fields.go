@@ -44,8 +44,8 @@ func (f *Fields) set(fld F) {
 	f.contents = append(f.contents, fld)
 }
 
-// MarshalJSONEncoder allows Fields to be marshaled to JSON via the encoder
-func (f *Fields) MarshalJSONEncoder(encoder *fancy.Encoder) error {
+// encodeJSON allows Fields to be marshaled to JSON via the encoder
+func (f *Fields) encodeJSON(encoder *fancy.Encoder) error {
 	if len(f.contents) == 0 {
 		return encoder.AddByteString("{}")
 	}

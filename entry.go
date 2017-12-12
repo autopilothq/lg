@@ -35,7 +35,7 @@ func (e *Entry) toPlainTextWithoutTime() []byte {
 
 func (e *Entry) toJSON() []byte {
 	encoder := fancy.NewEncoder()
-	err := e.Fields.MarshalJSONEncoder(encoder)
+	err := e.Fields.encodeJSON(encoder)
 	if err != nil {
 		return []byte("{\"error\":\"encoding error\"}\n")
 	}
