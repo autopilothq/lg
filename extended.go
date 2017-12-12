@@ -4,6 +4,8 @@ import (
 	"os"
 )
 
+// Extend returns a new sub logger by extending the current one with
+// extra fields.
 func (e *ExtendedLog) Extend(f ...F) Log {
 	newFields := &Fields{}
 
@@ -29,7 +31,7 @@ type ExtendedLog struct {
 	fields *Fields
 }
 
-func (e *ExtendedLog) addEntry(level Level, args []interface{}) *Entry {
+func (e *ExtendedLog) addEntry(level Level, args []interface{}) (*Entry, error) {
 	if e.fields != nil && e.fields.contents != nil {
 		i := 0
 		newArgs := make([]interface{}, len(args)+len(e.fields.contents))
@@ -46,7 +48,7 @@ func (e *ExtendedLog) addEntry(level Level, args []interface{}) *Entry {
 
 func (e *ExtendedLog) addFormattedEntry(
 	level Level, pattern string, args []interface{},
-) *Entry {
+) (*Entry, error) {
 	fields, remaining := ExtractTrailingFields(args)
 
 	if e.fields != nil && e.fields.contents != nil {
@@ -192,15 +194,18 @@ func (e *ExtendedLog) Fatalf(pattern string, args ...interface{}) {
 
 // Panic logs a message at fatal level and panics
 func (e *ExtendedLog) Panic(args ...interface{}) {
-	panic(e.addEntry(LevelFatal, args).Message)
+	entry, _ := e.addEntry(LevelFatal, args)
+	panic(entry.Message)
 }
 
 // Panicln logs a message at fatal level and panics
 func (e *ExtendedLog) Panicln(args ...interface{}) {
-	panic(e.addEntry(LevelFatal, args).Message)
+	entry, _ := e.addEntry(LevelFatal, args)
+	panic(entry.Message)
 }
 
 // Panicf logs a formatted message at fatal level and panics
 func (e *ExtendedLog) Panicf(pattern string, args ...interface{}) {
-	panic(e.addFormattedEntry(LevelFatal, pattern, args).Message)
+	entry, _ := e.addFormattedEntry(LevelFatal, pattern, args)
+	panic(entry.Message)
 }
