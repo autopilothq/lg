@@ -10,10 +10,10 @@ import (
 	"github.com/autopilothq/lg"
 )
 
-func BenchmarkFieldLogging(b *testing.B) {
+func BenchmarkPlainTextFieldLogging(b *testing.B) {
 	var out bytes.Buffer
 	lg.RemoveOutput(os.Stdout)
-	lg.AddOutput(&out, lg.JSON())
+	lg.AddOutput(&out, lg.PlainText())
 	defer lg.RemoveOutput(&out)
 
 	var (
@@ -40,7 +40,7 @@ func BenchmarkFieldLogging(b *testing.B) {
 		}
 	)
 
-	b.Run("Marshalling JSON", func(b *testing.B) {
+	b.Run("Marshalling Fields", func(b *testing.B) {
 		log := lg.Extend()
 
 		b.ResetTimer()
@@ -69,7 +69,7 @@ func BenchmarkFieldLogging(b *testing.B) {
 		}
 	})
 
-	b.Run("Marshalling JSON parallel", func(b *testing.B) {
+	b.Run("Marshalling Fields parallel", func(b *testing.B) {
 		log := lg.Extend()
 
 		b.ResetTimer()
