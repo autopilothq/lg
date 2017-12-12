@@ -11,7 +11,7 @@ import (
 	. "github.com/autopilothq/lg/encoding/json"
 )
 
-var _ = FDescribe("log encoding Encoder", func() {
+var _ = Describe("log encoding Encoder", func() {
 	var (
 		enc *Encoder
 	)
