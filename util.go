@@ -1,6 +1,7 @@
 package lg
 
 import (
+	"bytes"
 	"fmt"
 )
 
@@ -50,17 +51,21 @@ func ExtractTrailingFields(
 }
 
 func RenderMessage(args ...interface{}) string {
-	message := ""
-	for _, a := range args {
-		if message != "" {
-			message += " "
+	var message bytes.Buffer
+
+	for i, a := range args {
+		if i > 0 {
+			// message.WriteString(" ")
+			message.WriteByte(' ')
 		}
+
 		s, ok := a.(fmt.Stringer)
 		if ok {
-			message += s.String()
+			message.WriteString(s.String())
 		} else {
-			message += fmt.Sprintf("%v", a)
+			message.WriteString(fmt.Sprintf("%v", a))
 		}
 	}
-	return message
+
+	return message.String()
 }

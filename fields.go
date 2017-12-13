@@ -1,6 +1,9 @@
 package lg
 
 import (
+	"bytes"
+
+	"github.com/autopilothq/lg/encoding"
 	fancy "github.com/autopilothq/lg/encoding/json"
 )
 
@@ -19,14 +22,26 @@ func (f *Fields) renderPlainText() string {
 	if len(f.contents) == 0 {
 		return ""
 	}
-	out := ""
-	for _, fld := range f.contents {
-		if out != "" {
-			out += " "
+
+	out := bytes.NewBufferString("[")
+	// out := ""
+
+	for i, fld := range f.contents {
+
+		if i > 0 {
+			// out += " "
+			out.WriteByte(' ')
 		}
-		out += fld.Key + ":" + RenderMessage(fld.Val)
+
+		out.WriteString(fld.Key)
+		out.WriteByte(':')
+		out.WriteString(RenderMessage(fld.Val))
+		// out += fld.Key + ":" + RenderMessage(fld.Val)
 	}
-	return "[" + out + "] "
+
+	// return "[" + out + "] "
+	out.WriteString("] ")
+	return out.String()
 }
 
 func (f *Fields) set(fld F) {
@@ -51,7 +66,7 @@ func (f *Fields) encodeJSON(encoder *fancy.Encoder) error {
 	}
 
 	for _, fld := range f.contents {
-		err := fancy.EncodeKeyValue(encoder, fld.Key, fld.Val)
+		err := encoding.EncodeKeyValue(encoder, fld.Key, fld.Val)
 		if err != nil {
 			return err
 		}

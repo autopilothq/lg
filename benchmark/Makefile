@@ -17,7 +17,7 @@ bench.out: installTools
 	go test -run=NONE -bench=. -benchmem > bench.out
 
 prof: installTools
-	go test -run=NONE -bench=. -cpuprofile=cpuprof.out -memprofile=memprof.out -benchmem
+	go test -run=NONE -bench=BenchmarkPlainTextFieldLogging -cpuprofile=cpuprof.out -memprofile=memprof.out -benchmem
 
 cpuprof.out: prof
 	go tool pprof --text benchmark.test cpuprof.out

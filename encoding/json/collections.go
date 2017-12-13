@@ -13,7 +13,7 @@ type Bools []bool
 // MarshalArray converts the collection to json
 func (b Bools) MarshalArray(encoder *Encoder) error {
 	for _, v := range b {
-		if err := EncodeValue(encoder, v); err != nil {
+		if err := encoder.AddBool(v); err != nil {
 			return err
 		}
 	}

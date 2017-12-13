@@ -160,34 +160,29 @@ func (e *Encoder) AddArrayish(arr Array) error {
 	return nil
 }
 
-// AddArray appends an array to the buffer
-func (e *Encoder) AddArray(a []interface{}) error {
+// StartArray appends the necessary bytes to begin a json array
+func (e *Encoder) StartArray() error {
 	e.addSeparator()
 	e.buf.AppendByte('[')
+	return nil
+}
 
-	for _, val := range a {
-		if err := EncodeValue(e, val); err != nil {
-			return err
-		}
-	}
-
+// EndArray appends the necessary bytes to end a json array
+func (e *Encoder) EndArray() error {
 	e.buf.AppendByte(']')
 	return nil
 }
 
-// AddObject appends an object to the buffer
-func (e *Encoder) AddObject(m map[string]interface{}) error {
+// StartObject appends the necessary bytes to begin a json object
+func (e *Encoder) StartObject() error {
 	e.addSeparator()
 	e.buf.AppendByte('{')
+	return nil
+}
 
-	for key, val := range m {
-		if err := EncodeKeyValue(e, key, val); err != nil {
-			return err
-		}
-	}
-
+// EndObject appends the necessary bytes to end a json object
+func (e *Encoder) EndObject() error {
 	e.buf.AppendByte('}')
-
 	return nil
 }
 
