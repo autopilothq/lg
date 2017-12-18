@@ -1,6 +1,7 @@
 package lg
 
 import (
+	"bytes"
 	"sync"
 )
 
@@ -82,15 +83,15 @@ func (m *MockLog) Message(filters ...filter) (string, bool) {
 // Dump produces a string representation of a mock log, suitable for including
 // in assertion/expectation failure messages
 func (m *MockLog) Dump() string {
-	contents := ""
+	contents := bytes.NewBuffer([]byte{})
 
 	m.mutex.RLock()
 	defer m.mutex.RUnlock()
 
 	for _, e := range m.entries {
-		contents = contents + string(e.toPlainText())
+		contents.Write(e.toPlainText())
 	}
-	return contents
+	return contents.String()
 }
 
 func (m *MockLog) addEntry(level Level, args []interface{}) *Entry {
