@@ -1,7 +1,3 @@
-GOPATH=$(shell go env GOPATH)
-BENCHCMP=${GOPATH}/src/golang.org/x/tools/cmd/benchcmp
-BENCHVIS=${GOPATH}/src/github.com/ajstarks/svgo/benchviz
-
 compare: bench.out
 	benchcmp oldBench.out bench.out
 
@@ -29,19 +25,10 @@ memprof.out: prof
 
 memprof: memprof.out
 
-installTools: ${BENCHCMP}/.sentinel ${BENCHVIS}/.sentinel
-
-.PRECIOUS: ${BENCHCMP}/.sentinel # otherwise make (annoyingly) deletes it
-${BENCHCMP}/.sentinel:
-		 go get -u golang.org/x/tools/cmd/benchcmp
-		 touch $@
-
-.PRECIOUS: ${BENCHVIS}/.sentinel # otherwise make (annoyingly) deletes it
-${BENCHVIS}/.sentinel:
-		go get -u github.com/ajstarks/svgo/benchviz
-		touch $@
+installTools:
+	go get -u golang.org/x/tools/cmd/benchcmp github.com/ajstarks/svgo/benchviz
 
 clean:
-	rm -f bench.out bench.svg cpuprof.out memprof.out ${BENCHCMP}/.sentinel ${BENCHVIS}/.sentinel
+	rm -f bench.out bench.svg cpuprof.out memprof.out
 
 .PHONY: clean compare compareviz bench prof cpuprof memprof
