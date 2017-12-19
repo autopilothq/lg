@@ -1,7 +1,6 @@
 package encoding
 
 import (
-	"fmt"
 	"reflect"
 	"time"
 
@@ -192,8 +191,6 @@ func EncodeValue(enc Encoder, value interface{}) (err error) {
 		return encodeObject(enc, val)
 
 	default:
-		// TODO remove this debug logging
-		fmt.Println("FALLBACK", getTypeName(val), val)
 		return enc.AddReflected(val)
 	}
 }
