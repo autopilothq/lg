@@ -24,8 +24,8 @@ jobs:
       # specify any bash command here prefixed with `run: `
       # - run: go get -v -t -d ./...
       - run: curl https://glide.sh/get | sh
-      - run: go get -u github.com/onsi/ginkgo/ginkgo
-      - run: go get -u github.com/onsi/gomega/...
+      - run: go get -u golang.org/x/tools/cmd/benchcmp github.com/ajstarks/svgo/benchviz
+      - run: go get -u github.com/onsi/ginkgo/ginkgo github.com/onsi/gomega/...
       - run: glide install
       - run: ginkgo -r -race .
       - run: cd benchmark/ && make
