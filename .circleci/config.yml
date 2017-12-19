@@ -28,4 +28,4 @@ jobs:
       - run: go get -u github.com/onsi/ginkgo/ginkgo github.com/onsi/gomega/...
       - run: glide install
       - run: ginkgo -r -race .
-      - run: cd benchmark/ && make
+      # - run: cd benchmark/ && make
