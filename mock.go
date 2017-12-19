@@ -83,7 +83,7 @@ func (m *MockLog) Message(filters ...filter) (string, bool) {
 // Dump produces a string representation of a mock log, suitable for including
 // in assertion/expectation failure messages
 func (m *MockLog) Dump() string {
-	contents := bytes.NewBuffer([]byte{})
+	var contents bytes.Buffer
 
 	m.mutex.RLock()
 	defer m.mutex.RUnlock()
