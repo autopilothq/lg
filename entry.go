@@ -1,6 +1,7 @@
 package lg
 
 import (
+	"bytes"
 	"fmt"
 	"time"
 
