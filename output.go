@@ -29,19 +29,18 @@ var (
 func makePlainTexthookFn(output io.Writer, options *Options) hookFn {
 	return func(e *Entry) (err error) {
 		if options.minLevel > e.Level {
-			return
+			return nil
 		}
 
 		var n int
 		data := e.toPlainText()
 		n, err = output.Write(data)
 		if err != nil {
-			return
+			return err
 		}
 
 		if n != len(data) {
-			err = io.ErrShortWrite
-			return
+			return io.ErrShortWrite
 		}
 
 		return nil
@@ -51,7 +50,7 @@ func makePlainTexthookFn(output io.Writer, options *Options) hookFn {
 func makePlainJSONhookFn(output io.Writer, options *Options) hookFn {
 	return func(e *Entry) (err error) {
 		if options.minLevel > e.Level {
-			return
+			return nil
 		}
 
 		var n int
@@ -62,15 +61,14 @@ func makePlainJSONhookFn(output io.Writer, options *Options) hookFn {
 		}
 
 		if n != len(data) {
-			err = io.ErrShortWrite
-			return
+			return io.ErrShortWrite
 		}
 
 		return nil
 	}
 }
 
-func makeOutputhookFn(output io.Writer, options *Options) hookFn {
+func makeOutputHookFn(output io.Writer, options *Options) hookFn {
 	switch options.format {
 	case FormatPlainText:
 		return makePlainTexthookFn(output, options)
@@ -94,7 +92,7 @@ func AddOutput(output io.Writer, opts ...func(*Options)) {
 		panic(errors.New("output is already in use"))
 	}
 
-	fn := makeOutputhookFn(output, options)
+	fn := makeOutputHookFn(output, options)
 
 	outputs[output] = addHook(fn, options)
 }
@@ -111,7 +109,7 @@ func SetOutput(output io.Writer, opts ...func(*Options)) {
 		delete(outputs, output)
 	}
 
-	fn := makeOutputhookFn(output, options)
+	fn := makeOutputHookFn(output, options)
 
 	outputs[output] = addHook(fn, options)
 

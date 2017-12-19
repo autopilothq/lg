@@ -32,6 +32,26 @@ func EncodeKeyValue(enc Encoder, key string, value interface{}) (err error) {
 	return EncodeValue(enc, value)
 }
 
+// EncodeStringKeyValue json encodes a single key/string value pair
+func EncodeStringKeyValue(enc Encoder, key string, value string) (err error) {
+	err = enc.AddKey(key)
+	if err != nil {
+		return err
+	}
+
+	return enc.AddString(value)
+}
+
+// EncodeTimeKeyValue json encodes a single key/time value pair
+func EncodeTimeKeyValue(enc Encoder, key string, value time.Time) (err error) {
+	err = enc.AddKey(key)
+	if err != nil {
+		return err
+	}
+
+	return enc.AddTime(value)
+}
+
 func encodeArray(enc Encoder, arr []interface{}) (err error) {
 	if err = enc.StartArray(); err != nil {
 		return err
