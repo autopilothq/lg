@@ -2,6 +2,7 @@
 
 A simple, structured logger for Go.
 
+[![CircleCI](https://circleci.com/gh/autopilothq/lg/tree/master.svg?style=svg)](https://circleci.com/gh/autopilothq/lg/tree/master)
 [![GoDoc](https://godoc.org/github.com/autopilothq/lg?status.svg)](https://godoc.org/github.com/autopilothq/lg)
 [![Go Report Card](https://goreportcard.com/badge/github.com/autopilothq/lg)](https://goreportcard.com/report/github.com/autopilothq/lg)
 
@@ -18,19 +19,19 @@ import (
 )
 
 func main() {
-  
+
   // Simple logging
   lg.Println("starting")
-  
+
   // Levels (trace, debug, info, warn, error, fatal)
   lg.Warn("danger")
-  
+
   // Printf formatting
   thing := &map[string]string{
     "foo": "bar",
   }
   lg.Debugf("what is this %#v", thing)
-  
+
 }
 ```
 
@@ -104,7 +105,7 @@ By default, lg will output in plain text format to stdout. You can add and remov
 
 ```go
 // remove default stdout output
-lg.RemoveOutput(os.Stdout) 
+lg.RemoveOutput(os.Stdout)
 
 // write logging at level info or higher to a file
 f, err := os.OpenFile("/tmp/log", os.O_WRONLY|os.O_APPEND, 0666)
@@ -158,7 +159,7 @@ func ChurnSomeNumbers(log lg.Log, a int, b int) (int, error) {
     log.Error(err)
     return 0, err
   }
-  
+
   return a - b, nil
 }
 ```
@@ -172,7 +173,7 @@ Describe("ChurnSomeNumbers()", func() {
   BeforeEach({
     log := lg.Mock()
   })
-  
+
   It("fails when a is less than b", func() {
     _, err := ChurnSomeNumbers(log, 3, 5)
     Expect(err).To(HaveOccurred())
