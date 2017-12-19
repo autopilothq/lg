@@ -1,0 +1,4 @@
+.DS_Store
+*.coverprofile
+/* vendor should not be commited, it can be restored by running glide install */
+/vendor
