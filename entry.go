@@ -1,6 +1,7 @@
 package lg
 
 import (
+	"bytes"
 	"fmt"
 	"time"
 
@@ -17,15 +18,15 @@ type Entry struct {
 }
 
 const (
-	InvalidTime = "<invalid time>"
+	// TimeFormat is the layout to use when rendering time
+	TimeFormat = "2006-01-02T15:04:05.999"
 )
 
 func (e *Entry) toPlainText() []byte {
-	timeBytes, err := e.Timestamp.MarshalText()
-	if err != nil {
-		timeBytes = []byte(InvalidTime)
-	}
-	return append(append(timeBytes, ' '), e.toPlainTextWithoutTime()...)
+	timeBytes := bytes.NewBufferString(e.Timestamp.Format(TimeFormat)).Bytes()
+	return append(
+		append(timeBytes, ' '),
+		e.toPlainTextWithoutTime()...)
 }
 
 func (e *Entry) toPlainTextWithoutTime() []byte {
