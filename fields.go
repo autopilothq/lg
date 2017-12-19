@@ -60,15 +60,13 @@ func (f *Fields) set(fld F) {
 }
 
 // encodeJSON allows Fields to be marshaled to JSON via the encoder
-func (f *Fields) encodeJSON(encoder *fancy.Encoder) error {
-	if len(f.contents) == 0 {
-		return encoder.AddByteString("{}")
-	}
-
-	for _, fld := range f.contents {
-		err := encoding.EncodeKeyValue(encoder, fld.Key, fld.Val)
-		if err != nil {
-			return err
+func (f *Fields) encodeJSON(encoder *fancy.Encoder) (err error) {
+	if len(f.contents) > 0 {
+		for _, fld := range f.contents {
+			err := encoding.EncodeKeyValue(encoder, fld.Key, fld.Val)
+			if err != nil {
+				return err
+			}
 		}
 	}
 

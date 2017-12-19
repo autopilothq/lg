@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	json "github.com/autopilothq/lg/encoding"
 	fancy "github.com/autopilothq/lg/encoding/json"
 )
 
@@ -33,13 +34,46 @@ func (e *Entry) toPlainTextWithoutTime() []byte {
 		e.Message + "\n")
 }
 
+func makeJSONError(enc *fancy.Encoder, err error) []byte {
+	b := fmt.Sprintf(`{"error": "encoding error: %s"}`,
+		json.EncodeValue(enc, err))
+	return []byte(b)
+}
+
 func (e *Entry) toJSON() []byte {
-	encoder := fancy.NewEncoder()
-	err := e.Fields.encodeJSON(encoder)
+	enc := fancy.NewEncoder()
+
+	err := enc.StartObject()
 	if err != nil {
-		return []byte("{\"error\":\"encoding error\"}\n")
+		return makeJSONError(enc, err)
 	}
-	return encoder.Bytes()
+
+	err = json.EncodeTimeKeyValue(enc, "t", e.Timestamp)
+	if err != nil {
+		return makeJSONError(enc, err)
+	}
+
+	err = json.EncodeStringKeyValue(enc, "l", e.Level.String())
+	if err != nil {
+		return makeJSONError(enc, err)
+	}
+
+	err = e.Fields.encodeJSON(enc)
+	if err != nil {
+		return makeJSONError(enc, err)
+	}
+
+	err = json.EncodeStringKeyValue(enc, "m", e.Message)
+	if err != nil {
+		return makeJSONError(enc, err)
+	}
+
+	err = enc.EndObject()
+	if err != nil {
+		return makeJSONError(enc, err)
+	}
+
+	return append(enc.Bytes(), '\n')
 }
 
 func makeEntry(level Level, args []interface{}) *Entry {
