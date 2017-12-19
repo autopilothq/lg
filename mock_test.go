@@ -142,10 +142,11 @@ var _ = Describe("log mocking", func() {
 
 				expected := "info  words\ndebug [foo:bar] things happening\n"
 
-				timePattern := regexp.MustCompile("(^|\n)[0-9T:\\.-]{22,36}Z ")
+				timePattern := regexp.MustCompile("[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3} ")
 
 				// Trim times out of dumped logs
-				actual := timePattern.ReplaceAllString(mockLog.Dump(), "$1")
+				original := mockLog.Dump()
+				actual := timePattern.ReplaceAllLiteralString(original, "")
 
 				Expect(actual).To(Equal(expected))
 			})
