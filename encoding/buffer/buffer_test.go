@@ -1,10 +1,10 @@
-package json_test
+package buffer_test
 
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	. "github.com/autopilothq/lg/encoding/json"
+	. "github.com/autopilothq/lg/encoding/buffer"
 )
 
 var _ = Describe("log encoding Buffer", func() {

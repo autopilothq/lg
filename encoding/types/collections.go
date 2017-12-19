@@ -1,17 +1,14 @@
-package json
+package types
 
-import "time"
-
-// Array is a JSON marshalable array
-type Array interface {
-	MarshalArray(encoder *Encoder) error
-}
+import (
+	"time"
+)
 
 // Bools is a collection of bools
 type Bools []bool
 
 // MarshalArray converts the collection to json
-func (b Bools) MarshalArray(encoder *Encoder) error {
+func (b Bools) MarshalArray(encoder Encoder) error {
 	for _, v := range b {
 		if err := encoder.AddBool(v); err != nil {
 			return err
@@ -25,7 +22,7 @@ func (b Bools) MarshalArray(encoder *Encoder) error {
 type Bytes []byte
 
 // MarshalArray converts the collection to json
-func (b Bytes) MarshalArray(encoder *Encoder) error {
+func (b Bytes) MarshalArray(encoder Encoder) error {
 	return encoder.AddBytes(b)
 }
 
@@ -33,7 +30,7 @@ func (b Bytes) MarshalArray(encoder *Encoder) error {
 type Uint16s []uint16
 
 // MarshalArray converts the collection to json
-func (u Uint16s) MarshalArray(encoder *Encoder) error {
+func (u Uint16s) MarshalArray(encoder Encoder) error {
 	for _, v := range u {
 		if err := encoder.AddUint16(v); err != nil {
 			return err
@@ -47,7 +44,7 @@ func (u Uint16s) MarshalArray(encoder *Encoder) error {
 type Uint32s []uint32
 
 // MarshalArray converts the collection to json
-func (u Uint32s) MarshalArray(encoder *Encoder) error {
+func (u Uint32s) MarshalArray(encoder Encoder) error {
 	for _, v := range u {
 		if err := encoder.AddUint32(v); err != nil {
 			return err
@@ -61,7 +58,7 @@ func (u Uint32s) MarshalArray(encoder *Encoder) error {
 type Uint64s []uint64
 
 // MarshalArray converts the collection to json
-func (u Uint64s) MarshalArray(encoder *Encoder) error {
+func (u Uint64s) MarshalArray(encoder Encoder) error {
 	for _, v := range u {
 		if err := encoder.AddUint64(v); err != nil {
 			return err
@@ -75,7 +72,7 @@ func (u Uint64s) MarshalArray(encoder *Encoder) error {
 type Int16s []int16
 
 // MarshalArray converts the collection to json
-func (u Int16s) MarshalArray(encoder *Encoder) error {
+func (u Int16s) MarshalArray(encoder Encoder) error {
 	for _, v := range u {
 		if err := encoder.AddInt16(v); err != nil {
 			return err
@@ -89,7 +86,7 @@ func (u Int16s) MarshalArray(encoder *Encoder) error {
 type Int32s []int32
 
 // MarshalArray converts the collection to json
-func (i Int32s) MarshalArray(encoder *Encoder) error {
+func (i Int32s) MarshalArray(encoder Encoder) error {
 	for _, v := range i {
 		if err := encoder.AddInt32(v); err != nil {
 			return err
@@ -103,7 +100,7 @@ func (i Int32s) MarshalArray(encoder *Encoder) error {
 type Int64s []int64
 
 // MarshalArray converts the collection to json
-func (i Int64s) MarshalArray(encoder *Encoder) error {
+func (i Int64s) MarshalArray(encoder Encoder) error {
 	for _, v := range i {
 		if err := encoder.AddInt64(v); err != nil {
 			return err
@@ -117,7 +114,7 @@ func (i Int64s) MarshalArray(encoder *Encoder) error {
 type Strings []string
 
 // MarshalArray converts the collection to json
-func (s Strings) MarshalArray(encoder *Encoder) error {
+func (s Strings) MarshalArray(encoder Encoder) error {
 	for _, v := range s {
 		if err := encoder.AddString(v); err != nil {
 			return err
@@ -131,7 +128,7 @@ func (s Strings) MarshalArray(encoder *Encoder) error {
 type Float32s []float32
 
 // MarshalArray converts the collection to json
-func (f Float32s) MarshalArray(encoder *Encoder) error {
+func (f Float32s) MarshalArray(encoder Encoder) error {
 	for _, v := range f {
 		if err := encoder.AddFloat32(v); err != nil {
 			return err
@@ -145,7 +142,7 @@ func (f Float32s) MarshalArray(encoder *Encoder) error {
 type Float64s []float64
 
 // MarshalArray converts the collection to json
-func (f Float64s) MarshalArray(encoder *Encoder) error {
+func (f Float64s) MarshalArray(encoder Encoder) error {
 	for _, v := range f {
 		if err := encoder.AddFloat64(v); err != nil {
 			return err
@@ -159,7 +156,7 @@ func (f Float64s) MarshalArray(encoder *Encoder) error {
 type Durations []time.Duration
 
 // MarshalArray converts the collection to json
-func (f Durations) MarshalArray(encoder *Encoder) error {
+func (f Durations) MarshalArray(encoder Encoder) error {
 	for _, v := range f {
 		if err := encoder.AddDuration(v); err != nil {
 			return err
@@ -173,7 +170,7 @@ func (f Durations) MarshalArray(encoder *Encoder) error {
 type Times []time.Time
 
 // MarshalArray converts the collection to json
-func (f Times) MarshalArray(encoder *Encoder) error {
+func (f Times) MarshalArray(encoder Encoder) error {
 	for _, v := range f {
 		if err := encoder.AddTime(v); err != nil {
 			return err

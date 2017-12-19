@@ -1,9 +1,7 @@
-package encoding
+package types
 
 import (
 	"time"
-
-	"github.com/autopilothq/lg/encoding/json"
 )
 
 type UintEncoder interface {
@@ -50,11 +48,13 @@ type TimeEncoder interface {
 	AddDuration(val time.Duration) error
 	// AddTime appends a Time to the buffer
 	AddTime(t time.Time) error
+	// AddTimestamp appends a Timestamp to the buffer
+	AddTimestamp(t time.Time) error
 }
 
 type ArrayEncoder interface {
 	// AddArrayish appends an array value to the buffer
-	AddArrayish(arr json.Array) error
+	AddArrayish(arr Array) error
 
 	// StartArray appends the necessary bytes to begin a json array
 	StartArray() error

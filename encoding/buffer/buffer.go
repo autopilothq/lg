@@ -1,4 +1,4 @@
-package json
+package buffer
 
 import "strconv"
 

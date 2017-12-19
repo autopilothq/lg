@@ -1,4 +1,4 @@
-package json_test
+package text_test
 
 import (
 	"math"
@@ -6,10 +6,10 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	. "github.com/autopilothq/lg/encoding/json"
+	. "github.com/autopilothq/lg/encoding/text"
 )
 
-var _ = Describe("log encoding JSON", func() {
+var _ = Describe("log encoding Text", func() {
 	var (
 		enc *Encoder
 	)
@@ -21,7 +21,7 @@ var _ = Describe("log encoding JSON", func() {
 	Describe("AddKey()", func() {
 		It("adds a key", func() {
 			Expect(enc.AddKey("key")).To(Succeed())
-			Expect(enc.String()).To(Equal(`"key":`))
+			Expect(enc.String()).To(Equal(`key:`))
 		})
 	})
 
@@ -65,19 +65,19 @@ var _ = Describe("log encoding JSON", func() {
 
 		It("adds a NaN value (32bit)", func() {
 			Expect(enc.AddFloat32(float32(math.NaN()))).To(Succeed())
-			Expect(enc.String()).To(Equal(`"NaN"`))
+			Expect(enc.String()).To(Equal(`NaN`))
 		})
 
 		It("adds a +Infinity value (32bit)", func() {
 			val := float32(math.Inf(1))
 			Expect(enc.AddFloat32(val)).To(Succeed())
-			Expect(enc.String()).To(Equal(`"+Inf"`))
+			Expect(enc.String()).To(Equal(`+Inf`))
 		})
 
 		It("adds a -Infinity value (32bit)", func() {
 			val := float32(math.Inf(-1))
 			Expect(enc.AddFloat32(val)).To(Succeed())
-			Expect(enc.String()).To(Equal(`"-Inf"`))
+			Expect(enc.String()).To(Equal(`-Inf`))
 		})
 
 		It("adds a float64", func() {
@@ -87,17 +87,17 @@ var _ = Describe("log encoding JSON", func() {
 
 		It("adds a NaN value (64bit)", func() {
 			Expect(enc.AddFloat64(math.NaN())).To(Succeed())
-			Expect(enc.String()).To(Equal(`"NaN"`))
+			Expect(enc.String()).To(Equal(`NaN`))
 		})
 
 		It("adds a +Infinity value (64bit)", func() {
 			Expect(enc.AddFloat64(math.Inf(1))).To(Succeed())
-			Expect(enc.String()).To(Equal(`"+Inf"`))
+			Expect(enc.String()).To(Equal(`+Inf`))
 		})
 
 		It("adds a -Infinity value (64bit)", func() {
 			Expect(enc.AddFloat64(math.Inf(-1))).To(Succeed())
-			Expect(enc.String()).To(Equal(`"-Inf"`))
+			Expect(enc.String()).To(Equal(`-Inf`))
 		})
 	})
 
@@ -116,32 +116,7 @@ var _ = Describe("log encoding JSON", func() {
 	Describe("AddString()", func() {
 		It("adds a string", func() {
 			Expect(enc.AddString("wut!?")).To(Succeed())
-			Expect(enc.String()).To(Equal(`"wut!?"`))
-		})
-
-		It("escapes double quotes", func() {
-			Expect(enc.AddString(`"wut!?"`)).To(Succeed())
-			Expect(enc.String()).To(Equal(`"\"wut!?\""`))
-		})
-
-		It("escapes back slashes", func() {
-			Expect(enc.AddString(`\wut!?\`)).To(Succeed())
-			Expect(enc.String()).To(Equal(`"\\wut!?\\"`))
-		})
-
-		It("escapes \\n", func() {
-			Expect(enc.AddString("\nwut!?\n")).To(Succeed())
-			Expect(enc.String()).To(Equal(`"\nwut!?\n"`))
-		})
-
-		It("escapes \\r", func() {
-			Expect(enc.AddString("\rwut!?\r")).To(Succeed())
-			Expect(enc.String()).To(Equal(`"\rwut!?\r"`))
-		})
-
-		It("escapes \\t", func() {
-			Expect(enc.AddString("\twut!?\t")).To(Succeed())
-			Expect(enc.String()).To(Equal(`"\twut!?\t"`))
+			Expect(enc.String()).To(Equal(`wut!?`))
 		})
 	})
 })
