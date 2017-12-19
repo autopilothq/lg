@@ -55,7 +55,6 @@ func RenderMessage(args ...interface{}) string {
 
 	for i, a := range args {
 		if i > 0 {
-			// message.WriteString(" ")
 			message.WriteByte(' ')
 		}
 
