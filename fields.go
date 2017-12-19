@@ -1,7 +1,10 @@
 package lg
 
 import (
-	"encoding/json"
+	"bytes"
+
+	"github.com/autopilothq/lg/encoding"
+	fancy "github.com/autopilothq/lg/encoding/json"
 )
 
 // F represents a single pair of log 'fields'
@@ -19,14 +22,26 @@ func (f *Fields) renderPlainText() string {
 	if len(f.contents) == 0 {
 		return ""
 	}
-	out := ""
-	for _, fld := range f.contents {
-		if out != "" {
-			out += " "
+
+	out := bytes.NewBufferString("[")
+	// out := ""
+
+	for i, fld := range f.contents {
+
+		if i > 0 {
+			// out += " "
+			out.WriteByte(' ')
 		}
-		out += fld.Key + ":" + RenderMessage(fld.Val)
+
+		out.WriteString(fld.Key)
+		out.WriteByte(':')
+		out.WriteString(RenderMessage(fld.Val))
+		// out += fld.Key + ":" + RenderMessage(fld.Val)
 	}
-	return "[" + out + "] "
+
+	// return "[" + out + "] "
+	out.WriteString("] ")
+	return out.String()
 }
 
 func (f *Fields) set(fld F) {
@@ -44,26 +59,18 @@ func (f *Fields) set(fld F) {
 	f.contents = append(f.contents, fld)
 }
 
-// MarshalJSON allows Fields to satisfy json.Marshalable
-func (f *Fields) MarshalJSON() ([]byte, error) {
+// encodeJSON allows Fields to be marshaled to JSON via the encoder
+func (f *Fields) encodeJSON(encoder *fancy.Encoder) error {
 	if len(f.contents) == 0 {
-		return []byte("{}"), nil
+		return encoder.AddByteString("{}")
 	}
 
-	out := ""
 	for _, fld := range f.contents {
-		if out != "" {
-			out += ","
-		}
-		keyJSON, err := json.Marshal(fld.Key)
+		err := encoding.EncodeKeyValue(encoder, fld.Key, fld.Val)
 		if err != nil {
-			return []byte(nil), err
+			return err
 		}
-		valueJSON, err := json.Marshal(fld.Val)
-		if err != nil {
-			return []byte(nil), err
-		}
-		out += string(keyJSON) + ":" + string(valueJSON)
 	}
-	return []byte("{" + out + "}"), nil
+
+	return nil
 }

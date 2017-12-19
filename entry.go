@@ -1,10 +1,10 @@
 package lg
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
 	"time"
+
+	fancy "github.com/autopilothq/lg/encoding/json"
 )
 
 // Entry represents a log entry
@@ -34,14 +34,12 @@ func (e *Entry) toPlainTextWithoutTime() []byte {
 }
 
 func (e *Entry) toJSON() []byte {
-	buf := new(bytes.Buffer)
-	enc := json.NewEncoder(buf)
-	enc.SetEscapeHTML(false)
-	err := enc.Encode(e)
+	encoder := fancy.NewEncoder()
+	err := e.Fields.encodeJSON(encoder)
 	if err != nil {
 		return []byte("{\"error\":\"encoding error\"}\n")
 	}
-	return buf.Bytes()
+	return encoder.Bytes()
 }
 
 func makeEntry(level Level, args []interface{}) *Entry {

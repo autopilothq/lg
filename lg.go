@@ -138,15 +138,18 @@ func Fatalf(pattern string, args ...interface{}) {
 
 // Panic logs a message at fatal level and panics
 func Panic(args ...interface{}) {
-	panic(addEntry(LevelFatal, args).Message)
+	entry, _ := addEntry(LevelFatal, args)
+	panic(entry.Message)
 }
 
 // Panicln logs a message at fatal level and panics
 func Panicln(args ...interface{}) {
-	panic(addEntry(LevelFatal, args).Message)
+	entry, _ := addEntry(LevelFatal, args)
+	panic(entry.Message)
 }
 
 // Panicf logs a formatted message at fatal level and panics
 func Panicf(pattern string, args ...interface{}) {
-	panic(addFormattedEntry(LevelFatal, pattern, args).Message)
+	entry, _ := addFormattedEntry(LevelFatal, pattern, args)
+	panic(entry.Message)
 }
