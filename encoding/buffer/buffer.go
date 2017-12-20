@@ -1,6 +1,9 @@
 package buffer
 
-import "strconv"
+import (
+	"strconv"
+	"time"
+)
 
 const bufferSize = 1024
 
@@ -58,6 +61,37 @@ func (b *Buffer) AppendInt(i int64) {
 	b.ba = strconv.AppendInt(b.ba, i, 10)
 }
 
+// AppendPaddedInt appends a zero-padded, int64 to the buffer.
+func (b *Buffer) AppendPaddedInt(i int64, minWidth int) {
+	if minWidth == 0 {
+		panic("The minWidth of padded ints must be between 1 and 4")
+	}
+
+	if minWidth == 2 {
+		if i < 10 {
+			b.ba = append(b.ba, '0')
+		}
+	} else if minWidth == 3 {
+		switch {
+		case i < 10:
+			b.ba = append(b.ba, '0', '0')
+		case i < 100:
+			b.ba = append(b.ba, '0')
+		}
+	} else if minWidth == 4 {
+		switch {
+		case i < 10:
+			b.ba = append(b.ba, '0', '0', '0')
+		case i < 100:
+			b.ba = append(b.ba, '0', '0')
+		case i < 1000:
+			b.ba = append(b.ba, '0')
+		}
+	}
+
+	b.ba = strconv.AppendInt(b.ba, i, 10)
+}
+
 // AppendInt16 appends an int16 to the buffer
 func (b *Buffer) AppendInt16(i int16) {
 	b.AppendInt(int64(i))
@@ -88,10 +122,46 @@ func (b *Buffer) AppendFloat(f float64, bitSize int) {
 	b.ba = strconv.AppendFloat(b.ba, f, 'f', -1, bitSize)
 }
 
-// AppendBool  adds a boolean value to the buffer.
-func (b *Buffer) AppendBool(val bool) error {
+// AppendBool adds a boolean value to the buffer.
+func (b *Buffer) AppendBool(val bool) {
 	b.ba = strconv.AppendBool(b.ba, val)
-	return nil
+}
+
+// AppendDuration appends a Duration to the buffer
+func (b *Buffer) AppendDuration(val time.Duration) {
+	b.AppendInt(int64(val))
+}
+
+// AppendTime appends a Time to the buffer.
+// 	This is hardcoded to use the format: 2006-01-02T15:04:05.000
+//
+func (b *Buffer) AppendTime(t time.Time) {
+	year, month, day := t.Date()
+	hour, min, sec := t.Clock()
+
+	b.AppendPaddedInt(int64(year), 4)
+	b.AppendByte('-')
+	b.AppendPaddedInt(int64(month), 2)
+	b.AppendByte('-')
+	b.AppendPaddedInt(int64(day), 2)
+	b.AppendByte('T')
+	b.AppendPaddedInt(int64(hour), 2)
+	b.AppendByte(':')
+	b.AppendPaddedInt(int64(min), 2)
+	b.AppendByte(':')
+	b.AppendPaddedInt(int64(sec), 2)
+	b.AppendByte('.')
+	b.AppendPaddedInt(int64(t.Nanosecond()/int(time.Millisecond)), 3)
+
+	// s := fmt.Sprintf("%04d-%02d-%02dT%02d:%02d:%02d.%03d",
+	// 	year, month, day,
+	// 	hour, min, sec, t.Nanosecond()/int(time.Millisecond))
+	// b.AppendString(s)
+}
+
+// AppendTimestamp appends a Timestamp to the buffer
+func (b *Buffer) AppendTimestamp(t time.Time) {
+	b.AppendInt(t.UnixNano())
 }
 
 // Write appends raw bytes to the buffer.

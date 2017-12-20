@@ -135,23 +135,23 @@ func (e *Encoder) AddBytes(val []byte) error {
 // AddDuration appends a Duration to the buffer
 func (e *Encoder) AddDuration(val time.Duration) error {
 	e.addSeparator()
-	e.buf.AppendInt(int64(val))
+	e.buf.AppendDuration(val)
 	return nil
 }
 
-// AddTime appends a Time to the buffer
+// AddTime appends a Time to the buffer.
+// 	This is hardcoded to use the format: 2006-01-02T15:04:05.000
+//
 func (e *Encoder) AddTime(t time.Time) error {
 	e.addSeparator()
-	// TODO a unix timestamp possibly isn't the most conveienent format
-	e.buf.AppendInt(t.UnixNano())
+	e.buf.AppendTime(t)
 	return nil
 }
 
 // AddTimestamp appends a Timestamp to the buffer
 func (e *Encoder) AddTimestamp(t time.Time) error {
 	e.addSeparator()
-	// TODO a unix timestamp possibly isn't the most conveienent format
-	e.buf.AppendInt(t.UnixNano())
+	e.buf.AppendTimestamp(t)
 	return nil
 }
 

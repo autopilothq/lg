@@ -66,29 +66,37 @@ func (f *Fields) set(fld F) {
 }
 
 // encodeJSON allows Fields to be marshaled to JSON via the encoder
-func (f *Fields) encodeJSON(encoder *fancy.Encoder) (err error) {
+func (f *Fields) encodeJSON(enc *fancy.Encoder) (err error) {
 	if len(f.contents) == 0 {
 		return nil
 	}
 
+	if err = enc.StartObject(); err != nil {
+		return err
+	}
+
 	for _, fld := range f.contents {
-		err := encoding.EncodeKeyValue(encoder, fld.Key, fld.Val)
+		err := encoding.EncodeKeyValue(enc, fld.Key, fld.Val)
 		if err != nil {
 			return err
 		}
+	}
+
+	if err = enc.EndObject(); err != nil {
+		return err
 	}
 
 	return nil
 }
 
 // encodeText allows Fields to be marshaled to TEXT via the encoder
-func (f *Fields) encodeText(encoder *text.Encoder) (err error) {
+func (f *Fields) encodeText(enc *text.Encoder) (err error) {
 	if len(f.contents) == 0 {
 		return nil
 	}
 
 	for _, fld := range f.contents {
-		err := encoding.EncodeKeyValue(encoder, fld.Key, fld.Val)
+		err := encoding.EncodeKeyValue(enc, fld.Key, fld.Val)
 		if err != nil {
 			return err
 		}
