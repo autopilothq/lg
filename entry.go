@@ -62,12 +62,6 @@ func (e *Entry) toPlainText() []byte {
 	return append(timeBytes.Bytes(), '\n')
 }
 
-func (e *Entry) toPlainTextWithoutTime() []byte {
-	return []byte((e.Level.String() + "      ")[0:5] + " " +
-		e.Fields.renderPlainText() +
-		e.Message + "\n")
-}
-
 func makeJSONError(enc *fancy.Encoder, err error) []byte {
 	b := fmt.Sprintf(`{"error": "encoding error: %s"}`,
 		json.EncodeValue(enc, err))
@@ -92,9 +86,15 @@ func (e *Entry) toJSON() []byte {
 		return makeJSONError(enc, err)
 	}
 
-	err = e.Fields.encodeJSON(enc)
-	if err != nil {
-		return makeJSONError(enc, err)
+	if e.Fields.Len() > 0 {
+		if err = enc.AddKey("f"); err != nil {
+			return makeJSONError(enc, err)
+		}
+
+		err = e.Fields.encodeJSON(enc)
+		if err != nil {
+			return makeJSONError(enc, err)
+		}
 	}
 
 	err = json.EncodeStringKeyValue(enc, "m", e.Message)
