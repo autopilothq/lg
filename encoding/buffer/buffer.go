@@ -152,11 +152,6 @@ func (b *Buffer) AppendTime(t time.Time) {
 	b.AppendPaddedInt(int64(sec), 2)
 	b.AppendByte('.')
 	b.AppendPaddedInt(int64(t.Nanosecond()/int(time.Millisecond)), 3)
-
-	// s := fmt.Sprintf("%04d-%02d-%02dT%02d:%02d:%02d.%03d",
-	// 	year, month, day,
-	// 	hour, min, sec, t.Nanosecond()/int(time.Millisecond))
-	// b.AppendString(s)
 }
 
 // AppendTimestamp appends a Timestamp to the buffer

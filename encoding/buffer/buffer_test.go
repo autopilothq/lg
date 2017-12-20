@@ -119,8 +119,8 @@ var _ = Describe("log encoding Buffer", func() {
 		})
 
 		It("zero-padds with minWidth == 3", func() {
-			buf.AppendPaddedInt(50, 3)
-			Expect(buf.String()).To(Equal("050"))
+			buf.AppendPaddedInt(68, 3)
+			Expect(buf.String()).To(Equal("068"))
 		})
 
 		It("zero-padds with minWidth == 4", func() {
