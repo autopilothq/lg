@@ -144,7 +144,9 @@ func (e *Encoder) AddDuration(val time.Duration) error {
 //
 func (e *Encoder) AddTime(t time.Time) error {
 	e.addSeparator()
+	e.buf.AppendByte('"')
 	e.buf.AppendTime(t)
+	e.buf.AppendByte('"')
 	return nil
 }
 
