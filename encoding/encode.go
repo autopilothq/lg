@@ -4,11 +4,11 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/autopilothq/lg/encoding/json"
+	"github.com/autopilothq/lg/encoding/types"
 )
 
 // Encode json encodes a map of key/value pairs
-func Encode(enc Encoder, kv map[string]interface{}) (err error) {
+func Encode(enc types.Encoder, kv map[string]interface{}) (err error) {
 	for k, v := range kv {
 		if err = enc.AddKey(k); err != nil {
 			return err
@@ -23,7 +23,7 @@ func Encode(enc Encoder, kv map[string]interface{}) (err error) {
 }
 
 // EncodeKeyValue json encodes a single key/value pair
-func EncodeKeyValue(enc Encoder, key string, value interface{}) (err error) {
+func EncodeKeyValue(enc types.Encoder, key string, value interface{}) (err error) {
 	err = enc.AddKey(key)
 	if err != nil {
 		return err
@@ -33,7 +33,7 @@ func EncodeKeyValue(enc Encoder, key string, value interface{}) (err error) {
 }
 
 // EncodeStringKeyValue json encodes a single key/string value pair
-func EncodeStringKeyValue(enc Encoder, key string, value string) (err error) {
+func EncodeStringKeyValue(enc types.Encoder, key string, value string) (err error) {
 	err = enc.AddKey(key)
 	if err != nil {
 		return err
@@ -43,7 +43,7 @@ func EncodeStringKeyValue(enc Encoder, key string, value string) (err error) {
 }
 
 // EncodeTimeKeyValue json encodes a single key/time value pair
-func EncodeTimeKeyValue(enc Encoder, key string, value time.Time) (err error) {
+func EncodeTimeKeyValue(enc types.Encoder, key string, value time.Time) (err error) {
 	err = enc.AddKey(key)
 	if err != nil {
 		return err
@@ -52,7 +52,20 @@ func EncodeTimeKeyValue(enc Encoder, key string, value time.Time) (err error) {
 	return enc.AddTime(value)
 }
 
-func encodeArray(enc Encoder, arr []interface{}) (err error) {
+// EncodeAddTimestampKeyValue json encodes a single key/timestamp value pair
+func EncodeAddTimestampKeyValue(
+	enc types.Encoder, key string,
+	value time.Time,
+) (err error) {
+	err = enc.AddKey(key)
+	if err != nil {
+		return err
+	}
+
+	return enc.AddTimestamp(value)
+}
+
+func encodeArray(enc types.Encoder, arr []interface{}) (err error) {
 	if err = enc.StartArray(); err != nil {
 		return err
 	}
@@ -66,7 +79,7 @@ func encodeArray(enc Encoder, arr []interface{}) (err error) {
 	return enc.EndArray()
 }
 
-func encodeObject(enc Encoder, obj map[string]interface{}) (err error) {
+func encodeObject(enc types.Encoder, obj map[string]interface{}) (err error) {
 	if err = enc.StartObject(); err != nil {
 		return err
 	}
@@ -81,7 +94,7 @@ func encodeObject(enc Encoder, obj map[string]interface{}) (err error) {
 }
 
 // EncodeValue json encodes a single json value
-func EncodeValue(enc Encoder, value interface{}) (err error) {
+func EncodeValue(enc types.Encoder, value interface{}) (err error) {
 	switch val := value.(type) {
 
 	case uint:
@@ -145,31 +158,31 @@ func EncodeValue(enc Encoder, value interface{}) (err error) {
 		return enc.AddFloat64(*val)
 
 	case []uint16:
-		return enc.AddArrayish(json.Uint16s(val))
+		return enc.AddArrayish(types.Uint16s(val))
 
 	case []uint32:
-		return enc.AddArrayish(json.Uint32s(val))
+		return enc.AddArrayish(types.Uint32s(val))
 
 	case []uint64:
-		return enc.AddArrayish(json.Uint64s(val))
+		return enc.AddArrayish(types.Uint64s(val))
 
 	case []int16:
-		return enc.AddArrayish(json.Int16s(val))
+		return enc.AddArrayish(types.Int16s(val))
 
 	case []int32:
-		return enc.AddArrayish(json.Int32s(val))
+		return enc.AddArrayish(types.Int32s(val))
 
 	case []int64:
-		return enc.AddArrayish(json.Int64s(val))
+		return enc.AddArrayish(types.Int64s(val))
 
 	case []float32:
-		return enc.AddArrayish(json.Float32s(val))
+		return enc.AddArrayish(types.Float32s(val))
 
 	case []float64:
-		return enc.AddArrayish(json.Float64s(val))
+		return enc.AddArrayish(types.Float64s(val))
 
 	case []bool:
-		return enc.AddArrayish(json.Bools(val))
+		return enc.AddArrayish(types.Bools(val))
 
 	case bool:
 		return enc.AddBool(val)
@@ -184,7 +197,7 @@ func EncodeValue(enc Encoder, value interface{}) (err error) {
 		return enc.AddString(val)
 
 	case []string:
-		return enc.AddArrayish(json.Strings(val))
+		return enc.AddArrayish(types.Strings(val))
 
 	case error:
 		return enc.AddString(val.Error())
@@ -196,13 +209,13 @@ func EncodeValue(enc Encoder, value interface{}) (err error) {
 		return enc.AddTime(val)
 
 	case []time.Time:
-		return enc.AddArrayish(json.Times(val))
+		return enc.AddArrayish(types.Times(val))
 
 	case time.Duration:
 		return enc.AddDuration(val)
 
 	case []time.Duration:
-		return enc.AddArrayish(json.Durations(val))
+		return enc.AddArrayish(types.Durations(val))
 
 	case []interface{}:
 		return encodeArray(enc, val)

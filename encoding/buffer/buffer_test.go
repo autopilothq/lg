@@ -1,10 +1,13 @@
-package json_test
+package buffer_test
 
 import (
+	"fmt"
+	"time"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	. "github.com/autopilothq/lg/encoding/json"
+	. "github.com/autopilothq/lg/encoding/buffer"
 )
 
 var _ = Describe("log encoding Buffer", func() {
@@ -56,6 +59,31 @@ var _ = Describe("log encoding Buffer", func() {
 		})
 	})
 
+	Describe("AppendDuration()", func() {
+		It("appends a duration", func() {
+			buf.AppendDuration(100 * time.Nanosecond)
+			Expect(buf.String()).To(Equal("100"))
+		})
+	})
+
+	Describe("AppendTime()", func() {
+		It("appends a time", func() {
+			t := time.Date(2017, time.December, 20, 11, 20, 1, 152000000, time.UTC)
+			buf.AppendTime(t)
+			Expect(buf.String()).To(Equal("2017-12-20T11:20:01.152"))
+		})
+	})
+
+	Describe("AppendTimestamp()", func() {
+		It("appends a time", func() {
+			t := time.Date(2017, time.December, 20, 11, 20, 1, 52000, time.UTC)
+			buf.AppendTimestamp(t)
+			Expect(buf.String()).To(Equal(
+				fmt.Sprintf("%d", t.UnixNano())))
+
+		})
+	})
+
 	Describe("Append ints", func() {
 		It("appends an int64", func() {
 			buf.AppendInt(-1234)
@@ -70,6 +98,34 @@ var _ = Describe("log encoding Buffer", func() {
 		It("appends an int32", func() {
 			buf.AppendInt32(-1234)
 			Expect(buf.String()).To(Equal("-1234"))
+		})
+	})
+
+	Describe("AppendPaddedInt", func() {
+		It("panics on minWidth == 0", func() {
+			Expect(func() {
+				buf.AppendPaddedInt(123, 0)
+			}).To(Panic())
+		})
+
+		It("appends with minWidth == 1", func() {
+			buf.AppendPaddedInt(10, 1)
+			Expect(buf.String()).To(Equal("10"))
+		})
+
+		It("zero-padds with minWidth == 2", func() {
+			buf.AppendPaddedInt(5, 2)
+			Expect(buf.String()).To(Equal("05"))
+		})
+
+		It("zero-padds with minWidth == 3", func() {
+			buf.AppendPaddedInt(68, 3)
+			Expect(buf.String()).To(Equal("068"))
+		})
+
+		It("zero-padds with minWidth == 4", func() {
+			buf.AppendPaddedInt(50, 4)
+			Expect(buf.String()).To(Equal("0050"))
 		})
 	})
 

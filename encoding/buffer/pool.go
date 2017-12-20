@@ -1,4 +1,4 @@
-package json
+package buffer
 
 import (
 	"sync"
@@ -11,17 +11,18 @@ type Pool struct {
 }
 
 var (
-	pool      *Pool
+	pool *Pool
+
+	// GetBuffer retrieves a Buffer from the Pool
 	GetBuffer func() *Buffer
 )
 
 func init() {
 	pool = NewPool()
-
-	// GetBuffer retrieves a Buffer from the Pool
 	GetBuffer = pool.Get
 }
 
+// NewPool creates a new empty pool
 func NewPool() *Pool {
 	return &Pool{
 		pool: sync.Pool{

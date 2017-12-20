@@ -1,10 +1,9 @@
-package json
+package text
 
 import (
 	"encoding/json"
 	"math"
 	"time"
-	"unicode/utf8"
 
 	"github.com/autopilothq/lg/encoding/buffer"
 	"github.com/autopilothq/lg/encoding/types"
@@ -35,9 +34,7 @@ func (e *Encoder) Bytes() []byte {
 // AddKey appends the desired key to the buffer
 func (e *Encoder) AddKey(key string) error {
 	e.addSeparator()
-	e.buf.AppendByte('"')
 	e.buf.AppendString(key)
-	e.buf.AppendByte('"')
 	e.buf.AppendByte(':')
 	return nil
 }
@@ -100,11 +97,11 @@ func (e *Encoder) AddFloat(val float64, bitsize int) error {
 
 	switch {
 	case math.IsNaN(val):
-		e.buf.AppendString(`"NaN"`)
+		e.buf.AppendString(`NaN`)
 	case math.IsInf(val, 1):
-		e.buf.AppendString(`"+Inf"`)
+		e.buf.AppendString(`+Inf`)
 	case math.IsInf(val, -1):
-		e.buf.AppendString(`"-Inf"`)
+		e.buf.AppendString(`-Inf`)
 	default:
 		e.buf.AppendFloat(val, bitsize)
 	}
@@ -144,9 +141,7 @@ func (e *Encoder) AddDuration(val time.Duration) error {
 //
 func (e *Encoder) AddTime(t time.Time) error {
 	e.addSeparator()
-	e.buf.AppendByte('"')
 	e.buf.AppendTime(t)
-	e.buf.AppendByte('"')
 	return nil
 }
 
@@ -222,81 +217,13 @@ func (e *Encoder) addSeparator() {
 		return
 
 	default:
-		e.buf.AppendByte(',')
+		e.buf.AppendByte(' ')
 	}
 }
 
 // AddString adds a string to the encoded buffer
 func (e *Encoder) AddString(s string) error {
 	e.addSeparator()
-	e.buf.AppendByte('"')
-	start := 0
-
-	for i := 0; i < len(s); {
-		if b := s[i]; b < utf8.RuneSelf {
-			if safeSet[b] {
-				i++
-				continue
-			}
-
-			if start < i {
-				e.buf.AppendString(s[start:i])
-			}
-
-			switch b {
-			case '\\', '"':
-				e.buf.AppendByte('\\')
-				e.buf.AppendByte(b)
-
-			case '\n':
-				e.buf.AppendByte('\\')
-				e.buf.AppendByte('n')
-
-			case '\r':
-				e.buf.AppendByte('\\')
-				e.buf.AppendByte('r')
-
-			case '\t':
-				e.buf.AppendByte('\\')
-				e.buf.AppendByte('t')
-
-			default:
-
-				// This encodes bytes < 0x20 except for \t, \n and \r.
-				// If escapeHTML is set, it also escapes <, >, and &
-				// because they can lead to security holes when
-				// user-controlled strings are rendered into JSON
-				// and served to some browsers.
-				e.buf.AppendString(`\u00`)
-				e.buf.AppendByte(hex[b>>4])
-				e.buf.AppendByte(hex[b&0xF])
-			}
-
-			i++
-			start = i
-			continue
-		}
-
-		c, size := utf8.DecodeRuneInString(s[i:])
-
-		if c == utf8.RuneError && size == 1 {
-			if start < i {
-				e.buf.AppendString(s[start:i])
-			}
-
-			e.buf.AppendString(`\ufffd`)
-			i += size
-			start = i
-			continue
-		}
-
-		i += size
-	}
-
-	if start < len(s) {
-		e.buf.AppendString(s[start:])
-	}
-
-	e.buf.AppendByte('"')
+	e.buf.AppendString(s)
 	return nil
 }
