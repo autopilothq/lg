@@ -38,15 +38,15 @@ func (e *Entry) toPlainText() []byte {
 			return append([]byte(err.Error()), '\n')
 		}
 	}
-
+	var errMsg string
 	if e.Fields.Len() > 0 {
 		enc := text.NewEncoder()
 
 		if err = enc.StartArray(); err != nil {
 			return append([]byte(err.Error()), '\n')
 		}
-
-		if err = e.Fields.encodeText(enc); err != nil {
+		errMsg, err = e.Fields.encodeText(enc)
+		if err != nil {
 			return append([]byte(err.Error()), '\n')
 		}
 
@@ -65,6 +65,11 @@ func (e *Entry) toPlainText() []byte {
 
 	if _, err = timeBytes.WriteString(e.Message); err != nil {
 		return append([]byte(err.Error()), '\n')
+	}
+	if errMsg != "" {
+		if _, err = timeBytes.WriteString(": " + errMsg); err != nil {
+			return append([]byte(err.Error()), '\n')
+		}
 	}
 
 	return append(timeBytes.Bytes(), '\n')
