@@ -127,8 +127,9 @@ func (m *MockLog) Extend(f ...F) Log {
 // ExtendPrefix returns a new sub logger by extending the current one with
 // prefix and extra fields.
 func (m *MockLog) ExtendPrefix(prefix string, f ...F) Log {
-	ext := m.Extend(f...).(*MockLog)
-	ext.prefix += prefix
+	ext := &MockLog{
+		prefix: m.prefix + prefix,
+	}
 	return ext
 }
 
