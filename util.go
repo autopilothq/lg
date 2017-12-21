@@ -7,8 +7,7 @@ import (
 
 func ExtractAllFields(
 	args []interface{},
-) (fields *Fields, remaining []interface{}) {
-	fields = &Fields{}
+) (fields Fields, remaining []interface{}) {
 	remaining = make([]interface{}, 0)
 
 	for _, a := range args {
@@ -26,10 +25,9 @@ func ExtractAllFields(
 
 func ExtractTrailingFields(
 	args []interface{},
-) (fields *Fields, remaining []interface{}) {
+) (fields Fields, remaining []interface{}) {
 
 	extractedFs := make([]F, 0)
-	fields = &Fields{}
 	remaining = make([]interface{}, 0)
 
 	for i := len(args) - 1; i >= 0; i-- {

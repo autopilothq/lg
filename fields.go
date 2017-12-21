@@ -51,17 +51,12 @@ func (f *Fields) renderPlainText() string {
 }
 
 func (f *Fields) set(fld F) {
-	if f.contents != nil {
-		for _, item := range f.contents {
-			if item.Key == fld.Key {
-				item.Val = fld.Val
-				return
-			}
+	for idx := range f.contents {
+		if f.contents[idx].Key == fld.Key {
+			f.contents[idx].Val = fld.Val
+			return
 		}
-	} else {
-		f.contents = make([]F, 0)
 	}
-
 	f.contents = append(f.contents, fld)
 }
 

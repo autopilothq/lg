@@ -177,8 +177,8 @@ func callHooks(entry *Entry) (err error) {
 	return err
 }
 
-func addEntry(level Level, args []interface{}) (*Entry, error) {
-	entry := makeEntry(level, args)
+func addEntry(level Level, prefix string, args []interface{}) (*Entry, error) {
+	entry := makeEntry(level, prefix, args)
 	if err := callHooks(entry); err != nil {
 		return nil, err
 	}
@@ -187,9 +187,9 @@ func addEntry(level Level, args []interface{}) (*Entry, error) {
 }
 
 func addFormattedEntry(
-	level Level, pattern string, args []interface{},
+	level Level, prefix string, pattern string, args []interface{},
 ) (*Entry, error) {
-	entry := makeFormattedEntry(level, pattern, args)
+	entry := makeFormattedEntry(level, prefix, pattern, args)
 	if err := callHooks(entry); err != nil {
 		return nil, err
 	}
