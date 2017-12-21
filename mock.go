@@ -6,6 +6,7 @@ import (
 )
 
 type MockLog struct {
+	prefix  string
 	entries []*Entry
 	mutex   sync.RWMutex
 }
@@ -95,7 +96,7 @@ func (m *MockLog) Dump() string {
 }
 
 func (m *MockLog) addEntry(level Level, args []interface{}) *Entry {
-	entry := makeEntry(level, args)
+	entry := makeEntry(level, m.prefix, args)
 
 	m.mutex.Lock()
 	defer m.mutex.Unlock()
@@ -107,7 +108,7 @@ func (m *MockLog) addEntry(level Level, args []interface{}) *Entry {
 func (m *MockLog) addFormattedEntry(
 	level Level, pattern string, args []interface{},
 ) *Entry {
-	entry := makeFormattedEntry(level, pattern, args)
+	entry := makeFormattedEntry(level, m.prefix, pattern, args)
 
 	m.mutex.Lock()
 	defer m.mutex.Unlock()
@@ -116,9 +117,19 @@ func (m *MockLog) addFormattedEntry(
 	return entry
 }
 
+// Extend returns a new sub logger by extending the current one with
+// extra fields.
 func (m *MockLog) Extend(f ...F) Log {
 	// TODO: incorporate fields properly
 	return m
+}
+
+// ExtendPrefix returns a new sub logger by extending the current one with
+// prefix and extra fields.
+func (m *MockLog) ExtendPrefix(prefix string, f ...F) Log {
+	ext := m.Extend(f...).(*MockLog)
+	ext.prefix += prefix
+	return ext
 }
 
 // Trace logs a message at trace level

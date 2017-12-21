@@ -13,9 +13,10 @@ import (
 // Entry represents a log entry
 type Entry struct {
 	Timestamp time.Time `json:"t"`
+	Prefix    string    `json:"p,omitempty"`
 	Message   string    `json:"m"`
 	Level     Level     `json:"l,string"`
-	Fields    *Fields   `json:"f"`
+	Fields    Fields    `json:"f"`
 }
 
 const (
@@ -29,6 +30,13 @@ func (e *Entry) toPlainText() []byte {
 	_, err := timeBytes.WriteString(e.Level.AlignedString())
 	if err != nil {
 		return append([]byte(err.Error()), '\n')
+	}
+
+	if e.Prefix != "" {
+		_, err = timeBytes.WriteString("@" + e.Prefix + " ")
+		if err != nil {
+			return append([]byte(err.Error()), '\n')
+		}
 	}
 
 	if e.Fields.Len() > 0 {
@@ -86,6 +94,13 @@ func (e *Entry) toJSON() []byte {
 		return makeJSONError(enc, err)
 	}
 
+	if e.Prefix != "" {
+		err = json.EncodeStringKeyValue(enc, "p", e.Prefix)
+		if err != nil {
+			return makeJSONError(enc, err)
+		}
+	}
+
 	if e.Fields.Len() > 0 {
 		if err = enc.AddKey("f"); err != nil {
 			return makeJSONError(enc, err)
@@ -110,30 +125,32 @@ func (e *Entry) toJSON() []byte {
 	return append(enc.Bytes(), '\n')
 }
 
-func makeEntry(level Level, args []interface{}) *Entry {
+func makeEntry(level Level, prefix string, args []interface{}) *Entry {
 	fields, remaining := ExtractAllFields(args)
 
 	message := RenderMessage(remaining...)
 
 	return &Entry{
-		time.Now().UTC(),
-		message,
-		level,
-		fields,
+		Timestamp: time.Now().UTC(),
+		Prefix:    prefix,
+		Message:   message,
+		Level:     level,
+		Fields:    fields,
 	}
 }
 
 func makeFormattedEntry(
-	level Level, pattern string, args []interface{},
+	level Level, prefix string, pattern string, args []interface{},
 ) *Entry {
 	fields, remaining := ExtractTrailingFields(args)
 
 	message := fmt.Sprintf(pattern, remaining...)
 
 	return &Entry{
-		time.Now().UTC(),
-		message,
-		level,
-		fields,
+		Timestamp: time.Now().UTC(),
+		Prefix:    prefix,
+		Message:   message,
+		Level:     level,
+		Fields:    fields,
 	}
 }

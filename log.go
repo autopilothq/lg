@@ -39,4 +39,5 @@ type Log interface {
 	Panicf(pattern string, args ...interface{})
 
 	Extend(f ...F) Log
+	ExtendPrefix(prefix string, f ...F) Log
 }
