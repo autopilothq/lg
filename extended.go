@@ -9,10 +9,8 @@ import (
 func (e ExtendedLog) Extend(f ...F) Log {
 	newFields := Fields{}
 
-	if e.fields.contents != nil {
-		for _, fld := range e.fields.contents {
-			newFields.set(fld)
-		}
+	for _, fld := range e.fields.contents {
+		newFields.set(fld)
 	}
 
 	for _, fld := range f {
