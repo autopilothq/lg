@@ -116,7 +116,7 @@ var _ = Describe("log encoding Text", func() {
 	Describe("AddString()", func() {
 		It("adds a string", func() {
 			Expect(enc.AddString("wut!?")).To(Succeed())
-			Expect(enc.String()).To(Equal(`wut!?`))
+			Expect(enc.String()).To(Equal(`"wut!?"`))
 		})
 	})
 })

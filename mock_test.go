@@ -140,7 +140,7 @@ var _ = Describe("log mocking", func() {
 				log.Print("words")
 				log.Debug("things happening", lg.F{"foo", "bar"})
 
-				expected := "info  words\ndebug [foo:bar] things happening\n"
+				expected := "info  words\ndebug [foo:\"bar\"] things happening\n"
 
 				timePattern := regexp.MustCompile("[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3} ")
 
