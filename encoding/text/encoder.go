@@ -3,6 +3,7 @@ package text
 import (
 	"encoding/json"
 	"math"
+	"strconv"
 	"time"
 
 	"github.com/autopilothq/lg/encoding/buffer"
@@ -224,6 +225,6 @@ func (e *Encoder) addSeparator() {
 // AddString adds a string to the encoded buffer
 func (e *Encoder) AddString(s string) error {
 	e.addSeparator()
-	e.buf.AppendString(s)
+	e.buf.AppendString(strconv.Quote(s))
 	return nil
 }
