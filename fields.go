@@ -24,6 +24,14 @@ func (f *Fields) Len() int {
 	return len(f.contents)
 }
 
+// ErrKey is a reserved for error messages Key
+const ErrKey = "err"
+
+// Err returns error field
+func Err(err error) F {
+	return F{ErrKey, err}
+}
+
 func (f *Fields) renderPlainText() string {
 	if len(f.contents) == 0 {
 		return ""
@@ -31,9 +39,7 @@ func (f *Fields) renderPlainText() string {
 
 	out := bytes.NewBufferString("[")
 	// out := ""
-
 	for i, fld := range f.contents {
-
 		if i > 0 {
 			// out += " "
 			out.WriteByte(' ')
@@ -85,17 +91,19 @@ func (f *Fields) encodeJSON(enc *fancy.Encoder) (err error) {
 }
 
 // encodeText allows Fields to be marshaled to TEXT via the encoder
-func (f *Fields) encodeText(enc *text.Encoder) (err error) {
+func (f *Fields) encodeText(enc *text.Encoder) (errMsg string, err error) {
 	if len(f.contents) == 0 {
-		return nil
+		return
 	}
-
 	for _, fld := range f.contents {
+		if fld.Key == ErrKey {
+			errMsg = RenderMessage(fld.Val)
+			continue
+		}
 		err := encoding.EncodeKeyValue(enc, fld.Key, fld.Val)
 		if err != nil {
-			return err
+			return "", err
 		}
 	}
-
-	return nil
+	return
 }
