@@ -29,7 +29,15 @@ const ErrKey = "err"
 
 // Err returns error field
 func Err(err error) F {
-	return F{ErrKey, err}
+	if err == nil {
+		return F{ErrKey, ""}
+	}
+	return F{ErrKey, err.Error()}
+}
+
+// ErrMsg returns error field
+func ErrMsg(errMsg string) F {
+	return F{ErrKey, errMsg}
 }
 
 func (f *Fields) renderPlainText() string {
