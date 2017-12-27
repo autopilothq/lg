@@ -12,6 +12,12 @@ func Extend(f ...F) Log {
 	return ExtendedLog{fields: fields}
 }
 
+var prefixDelimiter = "."
+
+func SetPrefixDelimiter(delimiter string) {
+	prefixDelimiter = delimiter
+}
+
 func ExtendWithPrefix(prefix string, f ...F) Log {
 	fields := Fields{}
 	for _, fld := range f {
