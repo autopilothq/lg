@@ -27,7 +27,11 @@ func (e ExtendedLog) Extend(f ...F) Log {
 // prefix and extra fields.
 func (e ExtendedLog) ExtendPrefix(prefix string, f ...F) Log {
 	ext := e.Extend(f...).(ExtendedLog)
-	ext.prefix += prefix
+	if ext.prefix == "" {
+		ext.prefix = prefix
+	} else {
+		ext.prefix += prefixDelimiter + prefix
+	}
 	return ext
 }
 
