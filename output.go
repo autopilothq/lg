@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"reflect"
+	"strings"
 	"sync"
+	"sync/atomic"
 
 	multierror "github.com/hashicorp/go-multierror"
 )
@@ -21,14 +22,15 @@ type hook struct {
 }
 
 var (
-	mutex          sync.RWMutex
-	hookFnPointers map[uintptr]hook
-	outputs        map[io.Writer]uintptr
+	mutex   sync.RWMutex
+	hookFns map[uint32]hook
+	outputs map[io.Writer]uint32
+	nextHookID uint32
 )
 
 func makePlainTexthookFn(output io.Writer, options *Options) hookFn {
 	return func(e *Entry) (err error) {
-		if options.minLevel > e.Level {
+		if shouldSkip(e, options) {
 			return nil
 		}
 
@@ -49,7 +51,7 @@ func makePlainTexthookFn(output io.Writer, options *Options) hookFn {
 
 func makePlainJSONhookFn(output io.Writer, options *Options) hookFn {
 	return func(e *Entry) (err error) {
-		if options.minLevel > e.Level {
+		if shouldSkip(e, options) {
 			return nil
 		}
 
@@ -66,6 +68,20 @@ func makePlainJSONhookFn(output io.Writer, options *Options) hookFn {
 
 		return nil
 	}
+}
+
+func shouldSkip(e *Entry, options *Options) bool {
+	if options.minLevels != nil {
+		for _, prefixLevel := range options.minLevels {
+			if strings.HasPrefix(e.Prefix, prefixLevel.prefix) {
+				if prefixLevel.minLevel > e.Level {
+					return true
+				}
+				break
+			}
+		}
+	}
+	return false
 }
 
 func makeOutputHookFn(output io.Writer, options *Options) hookFn {
@@ -103,9 +119,9 @@ func SetOutput(output io.Writer, opts ...func(*Options)) {
 	mutex.Lock()
 	defer mutex.Unlock()
 
-	p, exists := outputs[output]
+	hookID, exists := outputs[output]
 	if exists {
-		delete(hookFnPointers, p)
+		delete(hookFns, hookID)
 		delete(outputs, output)
 	}
 
@@ -119,10 +135,10 @@ func SetOutput(output io.Writer, opts ...func(*Options)) {
 func RemoveOutput(output io.Writer) {
 	mutex.Lock()
 	defer mutex.Unlock()
-	p, exists := outputs[output]
+	hookID, exists := outputs[output]
 	if exists {
 		delete(outputs, output)
-		delete(hookFnPointers, p)
+		delete(hookFns, hookID)
 	}
 }
 
@@ -132,43 +148,38 @@ func RemoveAllOutputs() {
 	defer mutex.Unlock()
 
 	for _, p := range outputs {
-		delete(hookFnPointers, p)
+		delete(hookFns, p)
 	}
 
-	outputs = make(map[io.Writer]uintptr)
+	outputs = make(map[io.Writer]uint32)
 }
 
-// AddHook causes logging activity to invoke the given hook function
-func AddHook(fn hookFn, opts ...func(*Options)) {
+// AddHook causes logging activity to invoke the given hook function.
+// It returns an id which can be used to remove the hook with RemoveHook.
+func AddHook(fn hookFn, opts ...func(*Options)) uint32 {
 	options := makeOptions(opts...)
 	mutex.Lock()
 	defer mutex.Unlock()
-	addHook(fn, options)
+	return addHook(fn, options)
 }
 
-func addHook(fn hookFn, options *Options) uintptr {
-	p := reflect.ValueOf(fn).Pointer()
-	_, exists := hookFnPointers[p]
-	if exists {
-		panic(errors.New("logging hook already in use"))
-	}
-
-	hookFnPointers[p] = hook{fn, options}
-	return p
+func addHook(fn hookFn, options *Options) uint32 {
+	hookID := atomic.AddUint32(&nextHookID, uint32(1))
+	hookFns[hookID] = hook{fn, options}
+	return hookID
 }
 
 // RemoveHook removes a previously added hook function
-func RemoveHook(fn hookFn) {
+func RemoveHook(hookID uint32) {
 	mutex.Lock()
 	defer mutex.Unlock()
-	p := reflect.ValueOf(fn).Pointer()
-	delete(hookFnPointers, p)
+	delete(hookFns, hookID)
 }
 
 func callHooks(entry *Entry) (err error) {
 	mutex.RLock()
 	defer mutex.RUnlock()
-	for _, hook := range hookFnPointers {
+	for _, hook := range hookFns {
 		if herr := hook.fn(entry); herr != nil {
 			err = multierror.Append(err, herr)
 		}
@@ -199,8 +210,8 @@ func addFormattedEntry(
 
 func init() {
 	// construct variables for tracking outputs and hooks
-	hookFnPointers = make(map[uintptr]hook)
-	outputs = make(map[io.Writer]uintptr)
+	hookFns = make(map[uint32]hook)
+	outputs = make(map[io.Writer]uint32)
 
 	// set default output
 	AddOutput(os.Stdout)
