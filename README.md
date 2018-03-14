@@ -136,10 +136,10 @@ handler = func(e *lg.Entry) {
   fmt.Println(e.Timestamp, e.Level.String(), e.Message, e.Fields)
 }
 
-lg.AddHook(handler)
+hookID := lg.AddHook(handler)
 
-// A hook can be removed by passing the same handler function to lg.RemoveHook:
-// lg.RemoveHook(handler)
+// A hook can be removed by passing the hookId to lg.RemoveHook:
+// lg.RemoveHook(hookID)
 ```
 
 
