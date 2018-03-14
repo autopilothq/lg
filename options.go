@@ -67,6 +67,23 @@ func MinLevel(l Level) func(*Options) {
 	}
 }
 
+// Levels specifies the minimum log level for an Output. Levels can be specfied by log prefix.
+//
+// Examples:
+//
+//   // Show debug level and above on stdout
+//   lg.SetOutput(os.Stdout, lg.Levels("debug"))
+//
+//   // Show info level and above by default, but only show warn and above
+//   // for any logs from the "Server" prefix, including sub-prefixes.
+//   lg.SetOutput(os.Stdout, lg.Levels("(Server=warn) info"))
+//
+//   // Show errors and above, except for logs with the "Request" prefix,
+//   // which will show trace and above
+//   lg.SetOutput(os.Stdout, lg.Levels("(Request=trace) error"))
+//
+// The levels string is evaluated left-to-right, so more specific prefixes
+// should be to the left of more general ones.
 func Levels(levels string) func(*Options) {
 	return func(o *Options) {
 		matches := prefixLevelPattern.FindAllStringSubmatch(levels, -1)
